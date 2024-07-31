@@ -12,7 +12,7 @@ promptCreator_llm = Prompt()
 evaluation_llm = Evaluation()
 prompt_opt = Prompt_OPT()
 
-topic = """背影"""
+topic = """飛鳥"""
 prompt_opt.setInputPrompt(topic)
 topic += prompt_opt.sendMsg()
 

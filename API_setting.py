@@ -1,10 +1,11 @@
+import os
 import google.generativeai as genai
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class LLM:
-    API_KEY = 'AIzaSyCjbWCrwJTJHPUHvgfrNWFBifKoA_T6GVk'
-    # API_KEY = 'AIzaSyAoDS3qbAS2pH4EAKSRbogQm5bjbNaZqqw'
-    # API_KEY = 'AIzaSyBtXP_PXADcoS5F5-EctxnMV8yZuaOoBuY' 
+    API_KEY = os.getenv('GOOGLE_API_KEY')
     genai.configure(api_key=API_KEY)
 
     def __init__(self):

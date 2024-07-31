@@ -3,6 +3,9 @@
 需安裝gemini api:
 pip install google-generativeai
 
+python載入環境變數
+pip install python-dotenv
+
 # 用法：
 1. API_setting.py 中設定 API key
 2. 在main.py中任意設定topic
