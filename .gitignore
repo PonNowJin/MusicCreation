@@ -7,3 +7,11 @@ MusicStyle.txt
 *.pyc
 __pycache__
 venv/
+Sample_songs
+deleteNone.py
+SongAnalysis
+FailSongs.txt
+SongAnalysis_m
+SongAnalysis_1.py
+findErr.py
+

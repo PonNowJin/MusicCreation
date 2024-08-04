@@ -12,7 +12,7 @@ promptCreator_llm = Prompt()
 evaluation_llm = Evaluation()
 prompt_opt = Prompt_OPT()
 
-topic = """飛鳥"""
+topic = """歌名：請你一定要記得我好嗎"""
 prompt_opt.setInputPrompt(topic)
 topic += prompt_opt.sendMsg()
 
