@@ -26,7 +26,7 @@ evaluation_llm = Evaluation()
 prompt_opt = Prompt_OPT()
 
 # LLM分析topic撰寫prompt
-topic = """咖啡未冷前"""
+topic = """手寫的從前，輕快，回憶"""
 
 """
 with open('Story.txt', 'r') as f:
@@ -55,6 +55,7 @@ topic += '先去思考參考歌曲的意境、想法，再去臨摹歌曲的筆�
 
 
 promptCreator_llm.setInputPrompt(topic)
+promptCreator_llm.setRhyme('前')
 evaluation_llm.setTopic(topic)
 
 evaluation = None

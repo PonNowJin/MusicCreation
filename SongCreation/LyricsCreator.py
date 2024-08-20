@@ -1,4 +1,6 @@
 import re
+import json
+import random
 from API_setting import LLM
 
 
@@ -31,13 +33,14 @@ class lyricsCreator_llm:
     input_prompt = ""
 
     base_evaluation = "\n請根據建議內容創作出更高分的歌詞，保留優點處，改進缺點"  \
-                      "你是位詩人，也是流行歌作詞者，以ai的角度去創作富含新意的歌詞，也可以詼諧幽默的方式敘述出生活得快樂或無奈" \
-                      "，盡情編造故事，發揮創意，每一句富含哲理，巧妙地表達情緒，注重押韻" \
+                      "你是位詩人，也是流行歌作詞者，以ai的角度去創作富含新意的歌詞，加入流行元素，也可以詼諧幽默的方式敘述出生活得快樂或無奈" \
+                      "，盡情編造故事，發揮創意，每一句富含哲理，巧妙地表達情緒，注重押韻，寫出琅琅上口的歌詞" \
                       "歌詞每一句不能太長，只需輸出歌詞，不需輸出任何歌詞以外的文字，在改進的過程中要記得是在創作歌詞，而不是寫文章"
 
     lyrics_tips = ""
-    
     music_style_sample = ""
+    rhyme_dict = {}
+    chosed_rhyme = []
 
     def __init__(self):
         file_path = 'lyrics_tips.txt'
@@ -47,6 +50,10 @@ class lyricsCreator_llm:
         file_path = 'MusicStyle_sample.txt'
         with open(file_path, 'r', encoding='utf-8') as file:
             self.music_style_sample = file.read()
+        
+        file_path = 'Rhyme.json'
+        with open(file_path, 'r', encoding='utf-8') as file:
+            self.rhyme_dict = json.load(file)
 
 
     def setInputPrompt(self, prompt):
@@ -56,7 +63,7 @@ class lyricsCreator_llm:
         lyrics_path = output_dir + '/lyrics.txt'
         musicStyle_path = output_dir + '/MusicStyle.txt'
         if not evaluation:
-            full_prompt = self.lyrics_tips + self.base_prompt + f"\ninput：\n{self.input_prompt}" + self.music_style_sample
+            full_prompt = self.lyrics_tips + f"\ninput：\n{self.input_prompt}" + self.music_style_sample
             # print("1:  ", full_prompt)
             response = self.chat.send_message(full_prompt)
             self.save_to_file(lyrics_path, response.text)
@@ -92,5 +99,28 @@ class lyricsCreator_llm:
             with open(filename, 'w', encoding='utf-8') as file:
                 file.write(content)
 
+    def setRhyme(self, rhyme=[]):
+        """
+        加入隨機韻腳或指定韻腳到prompt中
+        Args:
+            rhyme (List): 指定的韻腳
+        """
+        rhyme_keys = list(self.rhyme_dict.keys())
+        for char in rhyme:
+            for key in rhyme_keys:
+                value = self.rhyme_dict[key]
+                if char in value:
+                    self.chosed_rhyme.append(key)
+        if len(self.chosed_rhyme) == 0:
+            # 隨機選兩個韻腳
+            self.chosed_rhyme = random.sample(rhyme_keys, 2)
+        
+        for key in self.chosed_rhyme:
+            self.lyrics_tips += f"{key}:\n{self.rhyme_dict[key]}\n"
+            
+                    
+        
+        
+            
 
 
