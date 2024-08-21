@@ -4,13 +4,16 @@ import sys
 from dotenv import load_dotenv
 load_dotenv()
 from Evaluation import Evaluation
-from LyricsCreator import lyricsCreator_llm
+from LyricsCreator import LyricsCreator_llm
 from google.generativeai.types.generation_types import StopCandidateException
 from Prompt_optimize import Prompt_OPT
 ROOT_DIR = os.getenv('ROOT_DIR')
 sys.path.append(ROOT_DIR)
 from SampleSongProc.SampleSongFetch.Lyrics_embedding import find_similar_songs
 from pathlib import Path
+import warnings 
+warnings.filterwarnings('ignore')
+
 
 new_directory = Path(ROOT_DIR + '/SongCreation')
 os.chdir(new_directory)
@@ -21,12 +24,12 @@ OUTPUT_DIR = os.getenv('LYRIC_AND_STYLE_OUTPUT_PATH')
 with open(OUTPUT_DIR+'/lyrics.txt', 'w', encoding='utf-8') as f:
     pass
 
-promptCreator_llm = lyricsCreator_llm()
+lyricsCreator_llm = LyricsCreator_llm()
 evaluation_llm = Evaluation()
 prompt_opt = Prompt_OPT()
 
 # LLM分析topic撰寫prompt
-topic = """手寫的從前，輕快，回憶"""
+topic = """偷故事的人"""
 
 """
 with open('Story.txt', 'r') as f:
@@ -54,14 +57,14 @@ for selected in selected_songs:
 topic += '先去思考參考歌曲的意境、想法，再去臨摹歌曲的筆法、敘事角度、歌詞長短，創造出一首新穎的歌曲'     
 
 
-promptCreator_llm.setInputPrompt(topic)
-promptCreator_llm.setRhyme('前')
+lyricsCreator_llm.setInputPrompt(topic)
+lyricsCreator_llm.setRhyme([])
 evaluation_llm.setTopic(topic)
 
 evaluation = None
 # 做第一次歌詞、曲風生成
 try:
-    promptCreator_llm.sendMsg(output_dir=OUTPUT_DIR)
+    lyricsCreator_llm.sendMsg(output_dir=OUTPUT_DIR)
     evaluation = evaluation_llm.evaluation(output_dir=OUTPUT_DIR)  # evaluation為評分和建議的text
     print(evaluation_llm.getScore())
 except StopCandidateException as e:
@@ -71,7 +74,7 @@ except StopCandidateException as e:
 count = 0
 while evaluation_llm.score < 90:
     try:
-        promptCreator_llm.sendMsg(output_dir=OUTPUT_DIR, evaluation=evaluation)
+        lyricsCreator_llm.sendMsg(output_dir=OUTPUT_DIR, evaluation=evaluation)
         evaluation = evaluation_llm.evaluation(output_dir=OUTPUT_DIR)
         print(evaluation_llm.getScore())
         count += 1
@@ -84,4 +87,4 @@ while evaluation_llm.score < 90:
     except Exception as e:
         print(f"出現錯誤")
         continue
-
+    

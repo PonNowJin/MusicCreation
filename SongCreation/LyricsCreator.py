@@ -4,7 +4,7 @@ import random
 from API_setting import LLM
 
 
-class lyricsCreator_llm:
+class LyricsCreator_llm:
     generation_config = {
         "temperature": 1.8,
         "top_p": 0.95,
@@ -16,19 +16,54 @@ class lyricsCreator_llm:
     model = LLM.getModel(generation_config)
     chat = model.start_chat(history=[])
 
-    base_prompt = """
-    "input: 我想要將使用者輸入的情感或主題做成一首歌曲，\n我會給你一段感情文字或是主題，請你生成：\n1.  樂曲風格、使用樂器、節奏、人聲描述（使用英文
-    ，盡量精簡表達，字數不超過120字，不要有標題等等的其他文字出現）\n2. 歌詞 （使用繁體中文）\n\n曲名：告訴我"
-    "output: <<1>>. Pop,  acoustic guitar,  piano,  drums,  mid-tempo,  soft vocals,  dreamy\n\n<<2>>. (Verse "
-    "1)只有窗外的雨聲\n輕輕敲打著玻璃，像你的聲音\n\n\n("
-    "Chorus)\n告訴我，你現在在哪裡\n是否也像我一樣，在夜裡失眠\n\n(Verse "
-    "2)\n路口轉角，那家熟悉的咖啡廳\n我們曾經坐在那裡，訴說著心事\n\n("
-    "Chorus)\n告訴我，你現在在哪裡\n是否也像我一樣，在夜裡失眠\n\n("
-    "Bridge)\n時間不停流逝，帶走了所有\n只有思念，依然停留在原地\n\n("
-    "Chorus)\n告訴我，你現在在哪裡\n是否也像我一樣，在夜裡失眠\n\n("
-    "Outro)\n告訴我，告訴我\n你的答案，我的方向"
-    請完全按照格式回答
+    music_style_prompt = """
+        你將根據我給出的情感或主題生成歌曲風格。
+
+        請務必遵守以下格式：
+
+        格式：
+        使用英語生成樂曲風格、使用樂器、節奏、人聲描述。必須簡短，且不超過120字。不要包含標題、歌詞或其他不必要的文字。
+
+        輸出示例：
+        Pop, acoustic guitar, piano, drums, mid-tempo, soft vocals, dreamy
     """
+    
+    base_prompt = """
+        你將根據我給出的情感或主題生成一首歌曲。
+
+        請務必遵守以下格式：
+        使用繁體中文生成歌詞，歌詞以外的文字不需要生成（重要）。
+    
+        (Verse 1)
+        只有窗外的雨聲
+        輕輕敲打著玻璃，像你的聲音
+
+        (Chorus)
+        告訴我，你現在在哪裡
+        是否也像我一樣，在夜裡失眠
+
+        (Verse 2)
+        路口轉角，那家熟悉的咖啡廳
+        我們曾經坐在那裡，訴說著心事
+
+        (Chorus)
+        告訴我，你現在在哪裡
+        是否也像我一樣，在夜裡失眠
+
+        (Bridge)
+        時間不停流逝，帶走了所有
+        只有思念，依然停留在原地
+
+        (Chorus)
+        告訴我，你現在在哪裡
+        是否也像我一樣，在夜裡失眠
+
+        (Outro)
+        告訴我，告訴我
+        你的答案，我的方向
+        """
+
+
 
     input_prompt = ""
 
@@ -63,29 +98,31 @@ class lyricsCreator_llm:
         lyrics_path = output_dir + '/lyrics.txt'
         musicStyle_path = output_dir + '/MusicStyle.txt'
         if not evaluation:
-            full_prompt = self.lyrics_tips + f"\ninput：\n{self.input_prompt}" + self.music_style_sample
-            # print("1:  ", full_prompt)
+            # 第一次生成（風格＋歌詞）
+            # ask for music style
+            full_prompt = self.music_style_prompt + self.music_style_sample + f"\ninput：\n{self.input_prompt}"
+            music_style = self.chat.send_message(full_prompt)
+            self.save_to_file(musicStyle_path, music_style.text)
+            
+            # ask for lyric
+            full_prompt = self.base_prompt + self.lyrics_tips + f"\ninput：\n{self.input_prompt}"
             response = self.chat.send_message(full_prompt)
             self.save_to_file(lyrics_path, response.text)
-            # 處理回應
-            music_style, lyrics = self.process_response(response.text)
-            # 將結果保存到文件
-            self.save_to_file(musicStyle_path, music_style)
-            self.save_to_file(lyrics_path, lyrics)
         else:
-            # print(evaluation)
+            # 改進歌詞
             full_prompt = f"主題描述： {self.input_prompt}\n以下是對剛剛作品的評分與建議： {evaluation}"
             full_prompt += self.base_evaluation
             # print(full_prompt)
             response = self.chat.send_message(full_prompt)
             self.save_to_file(lyrics_path, response.text)
 
-        # print(self.chat.history)
+        self.save_history(output_dir)        
 
         return response.text
+    
 
     def process_response(self, response_text):
-        # 使用正則表達式提取<<1>>和<<2>>部分
+        # 使用正則表達式提取<<1>>和<<2>>部分（目前沒使用）
         match = re.search(r'<<1>>\.\s*(.*?)\s*<<2>>\.\s*(.*)', response_text, re.DOTALL)
         if match:
             music_style = match.group(1).strip()
@@ -93,6 +130,7 @@ class lyricsCreator_llm:
             return music_style, lyrics
         else:
             return None, None
+        
 
     def save_to_file(self, filename, content):
         if content:
@@ -114,10 +152,15 @@ class lyricsCreator_llm:
         if len(self.chosed_rhyme) == 0:
             # 隨機選兩個韻腳
             self.chosed_rhyme = random.sample(rhyme_keys, 2)
-        
+        print(self.chosed_rhyme)
         for key in self.chosed_rhyme:
             self.lyrics_tips += f"{key}:\n{self.rhyme_dict[key]}\n"
             
+            
+    def save_history(self, output_dir):
+        with open(output_dir+"/LC_history.txt", "w", encoding="utf-8") as file:
+            for message in self.chat.history:
+                file.write(f'**{message.role}**: {message.parts[0].text}\n')
                     
         
         
