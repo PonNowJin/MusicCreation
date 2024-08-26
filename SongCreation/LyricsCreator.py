@@ -1,4 +1,5 @@
 import re
+import os
 import json
 import random
 from API_setting import LLM
@@ -10,11 +11,21 @@ class LyricsCreator_llm:
         "top_p": 0.95,
         "top_k": 64,
         "max_output_tokens": 8192,
-        "response_mime_type": "text/plain",
+        "response_mime_type": "application/json"
     }
     llm = LLM()
     model = LLM.getModel(generation_config)
     chat = model.start_chat(history=[])
+    
+    set_title_prompt = """
+        請依照以下描述回答這首歌的歌名，如果文本沒有提供歌名，請為他創造一個歌名。
+        只需回答歌名，不需要其他文字。
+        ex: 
+        input: 請為一首名為「麻雀」的歌曲寫歌詞。這首歌應該傳達出小人物的堅韌和自由，帶出希望和奮鬥的積極情感。通過描寫麻雀這個小生物的視角，講述其在大自然中的奮鬥和生存本能。請按照以下指導意見：歌詞應有標準的歌曲結構：主歌、合唱，如果可能的話，還可以包括橋段；使用生動的意象和隱喻來傳達與主題相關的情感；語言應詩意但易於理解，以便能夠引起廣泛聽眾的共鳴；整首歌應保持振奮和感人的基調。
+        output: 麻雀
+        input: 請為一首名為「放晴」的歌曲寫歌詞。歌詞應聚焦於希望、重生和克服困難後的正能量感受。這首歌應該帶來樂觀的感覺並慶祝新的開始。請按照以下指導意見：歌詞應有標準的歌曲結構：主歌、合唱，如果可能的話，還可以包括橋段；使用生動的意象和隱喻來傳達與主題相關的情感；語言應詩意但易於理解，以便能夠引起廣泛聽眾的共鳴；整首歌應保持希望和振奮的基調。
+        output: 放晴
+    """
 
     music_style_prompt = """
         你將根據我給出的情感或主題生成歌曲風格。
@@ -95,10 +106,16 @@ class LyricsCreator_llm:
         self.input_prompt = prompt
 
     def sendMsg(self, output_dir='', evaluation=None):
-        lyrics_path = output_dir + '/lyrics.txt'
-        musicStyle_path = output_dir + '/MusicStyle.txt'
+        lyrics_path = os.path.join(output_dir, 'lyrics.txt')
+        musicStyle_path = os.path.join(output_dir, 'MusicStyle.txt')
+        title_path = os.path.join(output_dir, 'Title.txt')
         if not evaluation:
-            # 第一次生成（風格＋歌詞）
+            # 第一次生成（歌名＋風格＋歌詞）
+            # ask for title
+            full_prompt = self.set_title_prompt + f"\ninput：\n{self.input_prompt}"
+            title = self.chat.send_message(full_prompt)
+            self.save_to_file(title_path, title.text)
+            
             # ask for music style
             full_prompt = self.music_style_prompt + self.music_style_sample + f"\ninput：\n{self.input_prompt}"
             music_style = self.chat.send_message(full_prompt)
