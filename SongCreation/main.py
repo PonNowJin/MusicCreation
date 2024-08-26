@@ -100,5 +100,5 @@ def SongCreation(topic:str, CREATE_SONG=1):
         
 
 if __name__ == '__main__':
-    topic = '旅行的意義'
+    topic = '孤獨的總和'
     SongCreation(topic, 1)
