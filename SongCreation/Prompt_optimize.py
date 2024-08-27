@@ -4,7 +4,7 @@ from API_setting import LLM
 
 class Prompt_OPT:
     generation_config = {
-        "temperature": 1,
+        "temperature": 0.3,
         "top_p": 0.95,
         "top_k": 64,
         "max_output_tokens": 8192,

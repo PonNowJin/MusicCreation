@@ -82,7 +82,7 @@ def get_info(aid):
     response = requests.get(f"http://127.0.0.1:8000/feed/{aid}")
 
     data = response.json()[0]
-    print(data)
+    # print(data)
 
     return data["audio_url"], data["metadata"]
 
@@ -97,7 +97,7 @@ def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
             break
         elif time.time() - start_time > 90:
             raise TimeoutError("Failed to get audio_url within 90 seconds")
-        time.sleep(15)
+        time.sleep(2)
     response = rget(audio_url, allow_redirects=False, stream=True)
     if response.status_code != 200:
         raise Exception("Could not download song")
@@ -116,10 +116,15 @@ def create_and_download_songs(output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
     '''
     一次性創建並下載歌曲
     '''
+    start_time = time.time()
     re, song_ids = generate_music()
+    time.sleep(90)
     # print(song_ids)
     for id in song_ids:
         save_song(id, output_path)
+    
+    total_time = time.time() - start_time
+    print(total_time, ' s')
     
 
 '''
