@@ -28,11 +28,22 @@
             <div class="song-info">
               <p class="song-title">{{ currentSong.title }}</p>
               <p class="song-artist">{{ currentSong.artist }}</p>
+              <div class="progress-container">
+                <span class="time">{{ formattedCurrentTime }}</span>
+                <input type="range" class="progress-bar" v-model="progress" min="0" max="100" @input="updateProgress" />
+                <span class="time">{{ remainingTime }}</span>
+              </div>
             </div>
           </div>
         </div>
         <div class="right-section">
-          <!-- 這裡可以放其他元素，例如音量控制等 -->
+          <!-- 音量控制、顯示歌詞、待辦清單 -->
+          <div class="volume-container">
+            <button class="volume-button" @click="toggleVolume">
+              <img src="@/assets/volumn.png" alt="volumn-icon">
+            </button>
+            <input type="range" class="volume-bar" v-model="volume" min="0" max="100" @input="updateVolume" />
+          </div>
         </div>
       </header>
 
@@ -87,7 +98,11 @@ export default {
       cover: require('@/assets/song-cover.jpg'), // 歌曲封面
       title: '你的計畫裡沒有我', // 歌曲名称
       artist: '鄧序' // 艺术家
-    }
+      },
+      progress: 0, // 音樂進度
+      duration: 120, // 音樂總時長（秒），需要根據實際音樂時長更新
+      currentTime: 0, // 當前播放時間（秒）
+      volume: 50,
     };
   },
   computed: {
@@ -102,6 +117,12 @@ export default {
         return require('@/assets/repeat-gray.png')
       }
     },
+    remainingTime() {
+    return this.formatTime(Math.max(this.duration - this.currentTime, 0)); // 確保剩餘時間不為負數
+    },
+    formattedCurrentTime() {
+      return this.formatTime(this.currentTime);
+    },
   },
   methods: {
     togglePlay() {
@@ -112,6 +133,25 @@ export default {
     },
     toggleRepeat() {
       this.repeat = (this.repeat + 1) % 3; // 循環切換重複狀態
+    },
+    toggleVolume() {
+      this.volume = 0;
+      document.documentElement.style.setProperty('--volume', `${this.volume}%`);
+    },
+    updateProgress(event) {
+      this.progress = event.target.value;
+      this.currentTime = Math.floor((this.progress / 100) * this.duration);
+      document.documentElement.style.setProperty('--progress', `${this.progress}%`);
+    },
+    formatTime(seconds) {
+      // 使用 Math.floor 處理秒數，避免顯示小數位數
+      const minutes = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${String(minutes).padStart(1, '0')}:${String(secs).padStart(2, '0')}`;
+    },
+    updateVolume(event) {
+      this.volume = event.target.value;
+      document.documentElement.style.setProperty('--volume', `${this.volume}%`);
     },
   },
 }
@@ -315,6 +355,101 @@ export default {
   font-size: 12px;
   color: #666;
   margin: 0;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 0;
+}
+
+.progress-bar {
+  width: 320px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, #8e8f8f 0%, #8e8f8f var(--progress, 0%), #e0e0e0 var(--progress, 0%), #e0e0e0 100%);
+  height: 3px;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+.progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: #8e8f8f;
+  width: 5px;
+  height: 10px;
+  border-radius: 10%;
+  cursor: pointer;
+}
+
+.progress-bar::-moz-range-thumb {
+  background: #8e8f8f;
+  width: 5px;
+  height: 10px;
+  border-radius: 10%;
+  cursor: pointer;
+}
+
+.time {
+  font-size: 12px;
+  color: #666;
+}
+
+.volume-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.volume-bar {
+  width: 80px; /* 音量條的寬度，可以調整 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, #8e8f8f 0%, #8e8f8f var(--volume, 50%), #e0e0e0 var(--volume, 50%), #e0e0e0 100%);
+  height: 3px;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volume-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: #ffffff;
+  border: 1px solid #8e8f8f;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volume-bar::-moz-range-thumb {
+  background: #ffffff;
+  border: 1px solid #8e8f8f;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volume-button {
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.volume-container img{
+  width: 100%;
+  height: 100%;
 }
 
 
