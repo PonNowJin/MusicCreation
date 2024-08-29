@@ -100,5 +100,5 @@ def SongCreation(topic:str, CREATE_SONG=1):
         
 
 if __name__ == '__main__':
-    topic = '青花瓷'
+    topic = '歌名：「不難」，說再見不難，講述與愛人分別的情感，帶有灑脫感'
     SongCreation(topic, 1)

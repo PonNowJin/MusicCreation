@@ -45,6 +45,8 @@
             <input type="range" class="volume-bar" v-model="volume" min="0" max="100" @input="updateVolume" />
           </div>
         </div>
+        <!-- 音訊元素 -->
+        <audio ref="audio" :src="currentSong.url" @timeupdate="updateTime" @ended="handleEnded"></audio>
       </header>
 
       <!-- 側邊導航欄 -->
@@ -95,14 +97,15 @@ export default {
       isShuffle: false, // 初始為不隨機播放
       repeat: 0, // 0:不循環, 1:循環, 2:單曲循環
       currentSong: {
-      cover: require('@/assets/song-cover.jpg'), // 歌曲封面
-      title: '你的計畫裡沒有我', // 歌曲名称
-      artist: '鄧序' // 艺术家
+        cover: require('@/assets/song-cover.jpg'), // 歌曲封面
+        title: '為你寫詩', // 歌曲名称
+        artist: 'Ponfu', // 艺术家
+        url: require('@/assets/song.mp3') // 歌曲文件的 URL
       },
       progress: 0, // 音樂進度
       duration: 120, // 音樂總時長（秒），需要根據實際音樂時長更新
       currentTime: 0, // 當前播放時間（秒）
-      volume: 50,
+      volume: 50, // 音量
     };
   },
   computed: {
@@ -125,9 +128,6 @@ export default {
     },
   },
   methods: {
-    togglePlay() {
-      this.isPlaying = !this.isPlaying; // 切換播放狀態
-    },
     toggleShuffle() {
       this.isShuffle = !this.isShuffle; // 切換隨機播放狀態
     },
@@ -135,13 +135,24 @@ export default {
       this.repeat = (this.repeat + 1) % 3; // 循環切換重複狀態
     },
     toggleVolume() {
-      this.volume = 0;
+      const audio = this.$refs.audio;
+      if (audio.volume > 0) {
+        this.volume = 0;
+        audio.volume = 0;
+      } else {
+        this.volume = 30;
+        audio.volume = 0.3;
+      }
       document.documentElement.style.setProperty('--volume', `${this.volume}%`);
     },
-    updateProgress(event) {
-      this.progress = event.target.value;
-      this.currentTime = Math.floor((this.progress / 100) * this.duration);
-      document.documentElement.style.setProperty('--progress', `${this.progress}%`);
+    togglePlay() {
+      this.isPlaying = !this.isPlaying; // 切換播放狀態
+      const audio = this.$refs.audio;
+      if (this.isPlaying) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
     },
     formatTime(seconds) {
       // 使用 Math.floor 處理秒數，避免顯示小數位數
@@ -149,8 +160,35 @@ export default {
       const secs = Math.floor(seconds % 60);
       return `${String(minutes).padStart(1, '0')}:${String(secs).padStart(2, '0')}`;
     },
+    updateTime() {
+      const audio = this.$refs.audio;
+      this.currentTime = audio.currentTime;
+      this.progress = (this.currentTime / audio.duration) * 100;
+    },
+    updateProgress(event) {
+      this.progress = event.target.value;
+      this.currentTime = Math.floor((this.progress / 100) * this.duration);
+      const audio = this.$refs.audio;
+      audio.currentTime = (this.progress / 100) * audio.duration;
+      document.documentElement.style.setProperty('--progress', `${this.progress}%`);
+    },
+    handleEnded() {
+      if (this.repeat === 2) {
+        this.$refs.audio.currentTime = 0;
+        this.$refs.audio.play();
+      } else if (this.repeat === 1) {
+        this.playNext();
+      } else {
+        this.isPlaying = false;
+      }
+    },
+    playNext() {
+      // 這裡添加邏輯來播放下一首歌曲
+    },
     updateVolume(event) {
       this.volume = event.target.value;
+      const audio = this.$refs.audio;
+      audio.volume = this.volume / 100;
       document.documentElement.style.setProperty('--volume', `${this.volume}%`);
     },
   },

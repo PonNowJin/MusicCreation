@@ -1,9 +1,13 @@
 import json
 import os
+import sys
 import time
 import requests
 from requests import get as rget
 from dotenv import load_dotenv
+ROOT_DIR = os.getenv('ROOT_DIR')
+sys.path.append(ROOT_DIR)
+from connect import * 
 
 load_dotenv()
 LYRIC_AND_STYLE_OUTPUT_PATH = os.getenv('LYRIC_AND_STYLE_OUTPUT_PATH')
@@ -87,7 +91,11 @@ def get_info(aid):
     return data["audio_url"], data["metadata"]
 
 
-def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
+def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH) -> int:
+    '''
+    input: aid: suno上歌曲的id, output_path
+    output: sid: 存在資料庫的Songs.sid
+    '''
     start_time = time.time()
     with open(os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, 'Title.txt'), 'r', encoding='utf-8') as f:
         title = f.read()
@@ -101,20 +109,26 @@ def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
     response = rget(audio_url, allow_redirects=False, stream=True)
     if response.status_code != 200:
         raise Exception("Could not download song")
-    index = 0
-    while os.path.exists(os.path.join(output_path, f"suno_{title}_{index}.mp3")):
-        index += 1
-    path = os.path.join(output_path, f"suno_{title}_{index}.mp3")
+    
+    connection = connect_to_db()
+    if connection:
+        with connection.cursor() as cursor:
+            sid = generate_new_id(cursor, 0)
+    else:
+        print('err to connect database')
+    
+    path = os.path.join(output_path, f"{sid}.mp3")
     with open(path, "wb") as output_file:
         for chunk in response.iter_content(chunk_size=1024):
-            # If the chunk is not empty, write it to the file.
             if chunk:
                 output_file.write(chunk)
+    store_to_database(sid)
+    return sid
 
 
 def create_and_download_songs(output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
     '''
-    一次性創建並下載歌曲
+    一次性創建並下載歌曲、加入資料庫 (外部主要使用)
     '''
     start_time = time.time()
     re, song_ids = generate_music()
@@ -122,15 +136,64 @@ def create_and_download_songs(output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
     # print(song_ids)
     for id in song_ids:
         save_song(id, output_path)
-    
+        
     total_time = time.time() - start_time
     print(total_time, ' s')
+    
+    
+def generate_new_id(cursor, table=0):
+    '''
+    用於找出指定資料表內新一項元素的id
+    table: 0(Songs), 1(Playlists)
+    '''
+    try:
+        if table==0:
+            table = 'Songs'
+            id = 'sid'
+        else:
+            table = 'Playlists'
+            id = 'pid'
+            
+        query = f"SELECT {id} FROM {table} ORDER BY {id} DESC LIMIT 1" 
+        # print(query)
+        cursor.execute(query)
+        result = cursor.fetchone()[0]
+        print('result: ', result)
+        if result:
+            new_id = int(result) + 1
+        else:
+            new_id = 1
+        print("new id: ", new_id)
+        return new_id
+    except:
+        return 0
+    
+
+def store_to_database(sid):
+    '''
+    把歌曲id, name, lyrics存進資料庫
+    '''
+    with open (os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, 'Title.txt'), 'r', encoding='utf-8') as f:
+        title = f.read()
+    with open(os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, 'lyrics.txt'), 'r', encoding='utf-8') as f:
+        lyrics = f.read()
+    connection = connect_to_db()
+    if connection is not None:
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO `Songs` (`sid`, `title`, `path`, `artist`, `duration`, `picture`, `lyrics`) VALUES (%s, %s, NULL, NULL, NULL, NULL, %s);"
+            re = cursor.execute(sql, (sid, title, lyrics))
+            connection.commit()
+            if re > 0:
+                print('成功加入資料庫')
+            else:
+                print('err from store_to_database')
+    else:
+        print('err to connect database')
+    
     
 
 '''
 if __name__ == '__main__':
-    create_and_download_songs()
     id = 'a5eaf297-306d-4b29-a843-8a847377933b'
-    get_info(id)
-    
+    store_to_database()    
 '''
