@@ -5,6 +5,7 @@ import time
 import requests
 from requests import get as rget
 from dotenv import load_dotenv
+from mutagen.id3 import APIC, ID3
 ROOT_DIR = os.getenv('ROOT_DIR')
 sys.path.append(ROOT_DIR)
 from connect import * 
@@ -88,7 +89,7 @@ def get_info(aid):
     data = response.json()[0]
     # print(data)
 
-    return data["audio_url"], data["metadata"]
+    return data["audio_url"], data["image_url"], data["metadata"]
 
 
 def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH) -> int:
@@ -100,7 +101,7 @@ def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH) -> int:
     with open(os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, 'Title.txt'), 'r', encoding='utf-8') as f:
         title = f.read()
     while True:
-        audio_url, metadata = get_info(aid)
+        audio_url, img_url, metadata = get_info(aid)
         if audio_url:
             break
         elif time.time() - start_time > 90:
@@ -122,8 +123,37 @@ def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH) -> int:
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 output_file.write(chunk)
+    set_mp3_cover(img_url, path)
     store_to_database(sid)
     return sid
+
+
+def set_mp3_cover(img_url, mp3_file):
+    '''
+    input: img_url (圖片在網路上的網址)
+    '''
+    try:
+        response = requests.get(img_url)
+        img_data = response.content
+        audio = ID3(mp3_file)
+
+        # 創建 APIC 幀
+        apic = APIC(
+            encoding=3,  # 3: utf-8
+            mime_type='image/jpeg',  # 假設圖片為 JPEG 格式
+            desc=u'Cover',
+            data=img_data
+        )
+
+        # 將 APIC 幀添加到 ID3 標籤
+        audio.add(apic)
+
+        # 保存修改
+        audio.save(v2_version=3)
+    except:
+        print('err from set_mp3_cover')
+        pass
+    
 
 
 def create_and_download_songs(output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
