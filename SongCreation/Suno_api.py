@@ -6,6 +6,7 @@ import requests
 from requests import get as rget
 from dotenv import load_dotenv
 from mutagen.id3 import APIC, ID3
+from GoogleDriveApi import *
 ROOT_DIR = os.getenv('ROOT_DIR')
 sys.path.append(ROOT_DIR)
 from connect import * 
@@ -123,8 +124,11 @@ def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH) -> int:
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 output_file.write(chunk)
+    
+    song_url = upload_to_drive(path)
+    picture_url = download_image(img_url, os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, f'img_{sid}'))
     set_mp3_cover(img_url, path)
-    store_to_database(sid)
+    store_to_database(sid, song_url, picture_url)
     return sid
 
 
@@ -153,6 +157,19 @@ def set_mp3_cover(img_url, mp3_file):
     except:
         print('err from set_mp3_cover')
         pass
+    
+def download_image(url, save_path):
+    '''
+    下載圖片並上傳到雲端
+    '''
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+
+    with open(save_path, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            if chunk:
+                f.write(chunk)
+    return upload_to_drive(save_path)
     
 
 
@@ -199,9 +216,9 @@ def generate_new_id(cursor, table=0):
         return 0
     
 
-def store_to_database(sid):
+def store_to_database(sid, song_url, img_url):
     '''
-    把歌曲id, name, lyrics存進資料庫
+    把歌曲id, name, lyrics存進資料庫, song_url, img_url
     '''
     with open (os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, 'Title.txt'), 'r', encoding='utf-8') as f:
         title = f.read()
@@ -210,13 +227,20 @@ def store_to_database(sid):
     connection = connect_to_db()
     if connection is not None:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO `Songs` (`sid`, `title`, `path`, `artist`, `duration`, `picture`, `lyrics`) VALUES (%s, %s, NULL, NULL, NULL, NULL, %s);"
-            re = cursor.execute(sql, (sid, title, lyrics))
+            sql = "INSERT INTO `Songs` (`sid`, `title`, `path`, `artist`, `duration`, `picture`, `lyrics`, `audio_url`) VALUES (%s, %s, NULL, NULL, NULL, %s, %s, %s);"
+            re = cursor.execute(sql, (sid, title, img_url, lyrics, song_url))
             connection.commit()
             if re > 0:
                 print('成功加入資料庫')
             else:
                 print('err from store_to_database')
+                
+            sql = 'INSERT INTO `song_playlist` (`sid`, `pid`) VALUES (%s, %s)'
+            re = cursor.execute(sql, (sid, '0'))
+            if re > 0:
+                print('成功加入播放列表ALL')
+            else:
+                print('err from store_to_database in playList')
     else:
         print('err to connect database')
     
