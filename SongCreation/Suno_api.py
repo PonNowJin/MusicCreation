@@ -237,6 +237,7 @@ def store_to_database(sid, song_url, img_url):
                 
             sql = 'INSERT INTO `song_playlist` (`sid`, `pid`) VALUES (%s, %s)'
             re = cursor.execute(sql, (sid, '0'))
+            connection.commit()
             if re > 0:
                 print('成功加入播放列表ALL')
             else:
