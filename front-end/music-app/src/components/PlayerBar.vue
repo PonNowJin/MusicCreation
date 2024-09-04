@@ -42,9 +42,10 @@
             </button>
             <input type="range" class="volume-bar" v-model="volume" min="0" max="100" @input="updateVolume" />
           </div>
+  
         </div>
         <!-- 音訊元素 -->
-        <audio ref="audio" :src="audio_url" @timeupdate="updateTime" @ended="handleEnded"></audio>
+        <audio ref="audio" @timeupdate="updateTime" @ended="handleEnded"></audio>
       </header>
 </template>
 
@@ -83,10 +84,12 @@ export default {
             return require('@/assets/no-cover.png')
         }
     },
+    /*
     audio_url() {
       console.log(this.currentSong.sid)
       return require(`@/assets/Output/${this.currentSong.sid}.mp3`)
     },
+    */
     repeatIcon() {
       if (this.repeat === 0) {
         return require('@/assets/repeat-gray.png');
@@ -106,19 +109,28 @@ export default {
     },
   },
   methods: {
-    loadSong(index) {
+    loadSong(autoPlay=false) {
+      // 暫停當前播放的歌曲
       if (this.isPlaying) {
-        this.togglePlay()
+        this.togglePlay();
       }
-      if (this.currentPlaylist && this.currentPlaylist.length > 0) {
-        this.currentSong = this.currentPlaylist[index];
-        console.log('url: ', this.currentSong.url)
-        this.duration = this.$refs.audio.duration;
-      }
+      // 重置音訊元素的 src 並加載新歌曲
+      this.$refs.audio.src = "";
+      this.$refs.audio.src = require(`@/assets/Output/${this.currentSong.sid}.mp3`)
+      this.$refs.audio.load(); 
+
       this.$refs.audio.currentTime = 0;
-    },
-    toggleShuffle() {
-      this.isShuffle = !this.isShuffle; // 切換隨機播放狀態
+      
+      this.duration = 0; 
+      
+      this.$refs.audio.oncanplaythrough = () => {
+        this.duration = this.$refs.audio.duration;
+        this.progress = (this.currentTime / this.duration) * 100;
+        document.documentElement.style.setProperty('--progress', `${this.progress}%`);
+        console.log('音樂準備完成')
+        if (autoPlay && this.isPlaying==false)
+          this.togglePlay();
+      };
     },
     toggleRepeat() {
       this.repeat = (this.repeat + 1) % 3; // 循環切換重複狀態
@@ -145,6 +157,15 @@ export default {
         this.isPlaying = true; // 通過 mutation 更新 isPlaying 狀態
         this.animateProgressBar(); // 啟動動畫
         }
+    },
+    // 切換隨機播放模式
+    toggleShuffle() {
+      this.isShuffle = !this.isShuffle; // 切換隨機播放狀態
+      if (this.isShuffle) {
+        this.shuffleArray(this.currentPlaylist); // 隨機排列播放列表
+      } else {
+        this.fetchPlaylist(0); // 重置播放列表為原始順序
+      }
     },
     formatTime(seconds) {
       // 使用 Math.floor 處理秒數，避免顯示小數位數
@@ -205,8 +226,7 @@ export default {
             this.currentIndex = 0;
         }
       }
-      this.loadSong(this.currentIndex)
-      this.togglePlay()
+      this.loadSong(true)
     },
     playPrevious() {
         if (this.currentIndex>0 && this.repeat!=2) {
@@ -216,17 +236,23 @@ export default {
             // 播放同一首
         }
         else {
-            if (this.repeat == 0 && this.repeat == 2) {
+            if (this.repeat == 0 || this.repeat == 2) {
                 // 播放同一首
-                this.currentIndex = 0;
             }
             else {
                 // repeat==1: 播放最後一首
                 this.currentIndex = this.currentPlaylist.length - 1;
             }
         }
-        this.loadSong();
-        this.togglePlay();
+        this.loadSong(true);
+    },
+    // 隨機打亂數組
+    shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        if (i!=this.currentIndex && j!=this.currentIndex)
+          [array[i], array[j]] = [array[j], array[i]]; // 交換元素（目前歌曲不變）
+      }
     },
     async fetchPlaylist(pid) {
       try {
@@ -237,21 +263,38 @@ export default {
         console.error('獲取播放列表錯誤: ', error);
       }
     },
+    async initializePlayer(pid) {
+      try {
+        await this.fetchPlaylist(pid);
+        this.loadSong();
+        this.animateProgressBar();
+      } catch (error) {
+        console.error('初始化播放器錯誤: ', error);
+      }
+    },
   },
   watch: {
+    /*
     currentIndex(newIndex) {
       this.loadSong(newIndex);
       if (this.isPlaying) {
         this.togglePlay(); // Restart playing the new song
       }
     },
-    isPlaying(newVal) {
-    console.log('isPlaying changed:', newVal);
+    */
+    currentIndex(newIndex) {
+      console.log('newIndex: ', newIndex);
     },
+    isPlaying(newVal) {
+      console.log('isPlaying changed:', newVal);
+    },
+    repeat(newIndex) {
+      console.log('repeat: ', newIndex);
+    },
+
   },
   mounted() {   // 加入播放列表
-    this.fetchPlaylist(0);
-    this.loadSong(this.currentIndex);
+    this.initializePlayer(0);
     this.animateProgressBar();
   },
   beforeUnmount() {

@@ -96,7 +96,8 @@ def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER):
                     "url": path,
                     "title": title,
                     "artist": audio.get('TPE1', 'Unknown'),
-                    "cover": data_uri
+                    "cover": data_uri,
+                    "duration": audio.info.length,
                 })
             except mutagen.MutagenError as e:
                 print(f"處理 {file_path} 時發生錯誤: {e}")
