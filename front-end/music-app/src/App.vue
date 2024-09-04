@@ -21,24 +21,8 @@
       <div class="main-content">
         <!-- 主要內容區域 -->
         <main class="content">
-          <nav class="navbar">
-            <div class="controls">
-              <button>◀</button>
-              <button>▶</button>
-            </div>
-            <div class="profile">
-              <input type="text" placeholder="搜尋">
-              <button>登入</button>
-            </div>
-          </nav>
+          <PlaylistGrid />
 
-          <section class="hero">
-            <h2>瀏覽</h2>
-            <div class="hero-content">
-              <img src="@/assets/taiwan-music.jpg" alt="Taiwan Music" />
-              <img src="@/assets/a-list-mandopop.jpg" alt="Mandopop" />
-            </div>
-          </section>
         </main>
       </div>
     </div>
@@ -47,11 +31,13 @@
 
 <script>
 import PlayerBar from '@/components/PlayerBar.vue';
+import PlaylistGrid from './components/PlaylistGrid.vue';
 
 export default {
   name: 'App',
   components: {
     PlayerBar,
+    PlaylistGrid,
   },
   data() {
     return {

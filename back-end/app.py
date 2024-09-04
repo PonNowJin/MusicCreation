@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request, redirect, send_file
 from flask_cors import CORS
 from flask import send_from_directory
 from mutagen.id3 import APIC
+from flask_cors import cross_origin
 from dotenv import load_dotenv
 load_dotenv()
 ROOT_DIR = os.getenv('ROOT_DIR')
@@ -24,6 +25,7 @@ connection = connect_to_db()
 def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER):
     songs = []
     try:
+        connection = connect_to_db()
         with connection.cursor() as cursor:
             # 取得指定播放列表中的所有歌曲ID
             sql = 'SELECT sid FROM song_playlist WHERE pid = %s'
@@ -131,6 +133,54 @@ def add_song_to_playlist(pid:str):
 def serve_media(filename):
     file_path = os.path.join(MUSIC_FOLDER, filename)
     return send_from_directory(MUSIC_FOLDER, filename)
+
+@app.route('/playlistGrid', methods=['GET'])
+@cross_origin()
+def getPlaylistGridData():
+    '''
+    抓出所有的playlist，並提供4首歌的sid作為playlist封面
+    [
+        {
+            "pid": 0,
+            "title": "ALL",
+            "songs": [
+                sid1, sid2, sid3...
+            ]
+        },
+    ]    
+    '''
+    data = []
+    try:
+        connection = connect_to_db()
+        with connection.cursor() as cursor:
+            sql = 'SELECT pid, name FROM Playlists'
+            cursor.execute(sql)
+            playlists = cursor.fetchall()
+            
+            for pid, name in playlists:
+                print('pid: ', pid)
+                sql = 'SELECT sid FROM song_playlist WHERE pid = %s LIMIT 4'
+                
+                cursor.execute(sql, (pid, ))
+                sids = cursor.fetchall()
+                playlist = {
+                    "pid": pid,
+                    "title": name,
+                    "songs": [sid[0] for sid in sids],
+                }
+                data.append(playlist)
+                
+    except pymysql.err.InterfaceError as e:
+        print(f"資料庫連接出現問題: {e}")
+        # 重新連接資料庫，或回傳錯誤訊息
+        return jsonify({"error": "Database connection error"}), 500
+    
+    except Exception as e:
+        print(f"處理時發生錯誤: {e}")
+        return jsonify({"error": str(e)}), 500
+        
+    return jsonify(data)
+            
 
 
 if __name__ == '__main__':

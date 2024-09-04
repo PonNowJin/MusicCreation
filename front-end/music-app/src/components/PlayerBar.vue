@@ -226,7 +226,11 @@ export default {
             this.currentIndex = 0;
         }
       }
-      this.loadSong(true)
+      if (this.isPlaying) {
+        this.loadSong(true);
+      } else {
+        this.loadSong();
+      }
     },
     playPrevious() {
         if (this.currentIndex>0 && this.repeat!=2) {
@@ -244,7 +248,11 @@ export default {
                 this.currentIndex = this.currentPlaylist.length - 1;
             }
         }
-        this.loadSong(true);
+        if (this.isPlaying) {
+          this.loadSong(true);
+        } else {
+          this.loadSong();
+        }
     },
     // 隨機打亂數組
     shuffleArray(array) {
