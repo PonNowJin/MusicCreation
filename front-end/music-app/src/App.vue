@@ -4,8 +4,6 @@
       <!-- 頂部播放列 -->
       <PlayerBar/>
 
-      <router-view />
-
       <!-- 側邊導航欄 -->
       <aside class="sidebar">
         <div class="logo">
@@ -21,7 +19,7 @@
       <div class="main-content">
         <!-- 主要內容區域 -->
         <main class="content">
-          <PlaylistGrid />
+          <router-view />
 
         </main>
       </div>
@@ -31,13 +29,11 @@
 
 <script>
 import PlayerBar from '@/components/PlayerBar.vue';
-import PlaylistGrid from './components/PlaylistGrid.vue';
 
 export default {
   name: 'App',
   components: {
     PlayerBar,
-    PlaylistGrid,
   },
   data() {
     return {

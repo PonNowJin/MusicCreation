@@ -49,4 +49,6 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
+test.vue
+
 

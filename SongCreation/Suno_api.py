@@ -126,7 +126,7 @@ def save_song(aid, output_path=LYRIC_AND_STYLE_OUTPUT_PATH) -> int:
                 output_file.write(chunk)
     
     song_url = upload_to_drive(path)
-    picture_url = download_image(img_url, os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, f'img_{sid}'))
+    picture_url = download_image(img_url, os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, f'img_{sid}.png'))
     set_mp3_cover(img_url, path)
     store_to_database(sid, song_url, picture_url)
     return sid

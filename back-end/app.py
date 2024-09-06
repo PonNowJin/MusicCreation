@@ -123,6 +123,7 @@ def get_playlist():
 @app.route('/playlist', methods=['POST'])
 def add_song_to_playlist(pid:str):
     new_song = request.json
+    connection = connect_to_db()
     with connection.cursor() as cursor:
         sql = 'INSERT INTO `song_playlist` (`sid`, `pid`) VALUES (%s, %s)'
         re = cursor.execute(sql, (new_song.sid, pid))
@@ -133,6 +134,57 @@ def add_song_to_playlist(pid:str):
 def serve_media(filename):
     file_path = os.path.join(MUSIC_FOLDER, filename)
     return send_from_directory(MUSIC_FOLDER, filename)
+
+@app.route('/playlistInfo/<pid>', methods=['GET'])
+@cross_origin()
+def getPlaylistInfo(pid):
+    '''
+    song {
+        "sid": sid,
+        "title": title,
+        "artist": artist,
+        "duration": duration,
+    }
+    return {
+        "pid": 0,
+        "title": "ALL",
+        "songs": [
+            song1, song2, song3...
+        ]
+    }
+    '''
+    connection = connect_to_db()
+    with connection.cursor() as cursor:
+        sql = 'SELECT pid, name FROM Playlists WHERE pid = %s'
+        cursor.execute(sql, (pid, ))
+        playlist = cursor.fetchone()
+        playlist_title = playlist[1]
+    
+        '''
+        sql = 'SELECT sid, title, artist FROM Songs WHERE sid IN (SELECT sid FROM song_playlist WHERE pid = %s)'
+        cursor.execute(sql, (pid, ))
+        data = cursor.fetchall()
+        '''
+        data = find_playlist(pid)
+        print(data)
+        
+        songs = []
+        for d in data:
+            song = {
+                'sid': d['sid'],
+                'title': d['title'],
+                'artist': d['artist'],
+                'duration': d['duration'],
+            }
+            songs.append(song)
+        final_data = {
+            'pid': pid,
+            'title': playlist_title,
+            'songs': songs,
+        }
+        return jsonify(final_data)
+            
+    
 
 @app.route('/playlistGrid', methods=['GET'])
 @cross_origin()
