@@ -39,7 +39,7 @@
             <td>
                 <div class="cover">
                 <img :src="require(`@/assets/Output/img_${song.sid}.png`)" :alt="song.title" class="song-cover">
-                <div class="play-icon"></div>
+                <div class="play-icon" @click.stop="playSong(song.sid)"></div>
                 </div>
             </td>
             <td>{{ song.title }}</td>
@@ -56,6 +56,7 @@
   
   <script>
   import axios from 'axios';
+  import eventBus from '@/eventBus';
   
   export default {
     name: 'PlaylistPage',
@@ -87,8 +88,12 @@
       selectSong(song) {
         this.selectedSong = song;
       },
-        isSelected(song) {
-            return this.selectedSong && this.selectedSong.sid === song.sid;
+      isSelected(song) {
+        return this.selectedSong && this.selectedSong.sid === song.sid;
+      },
+      playSong(sid) {
+        const pid = this.$route.params.pid; // 取得 pid
+        eventBus.emit('play-song', { pid, sid });
       },
     }
   };
@@ -180,8 +185,10 @@
   width: auto; /* 其他列自動均分剩餘寬度 */
 }
 
-.playlist-songs tbody {
-  border-radius: 20px; /* 邊角變圓弧 */
+.playlist-songs tbody tr{
+  position: relative;
+  border-radius: 12px; /* 邊角變圓弧 */
+  overflow: hidden; /* 防止內容超出圓角區域 */
 }
 
 .playlist-songs tbody tr:nth-child(odd) {
@@ -206,10 +213,6 @@
   text-overflow: ellipsis; /* 讓文本溢出的時候顯示省略號 */
 }
 
-.playlist-songs tbody tr {
-  position: relative; /* 為 tr 設置相對定位 */
-}
-
 .playlist-songs tbody tr:hover .play-icon {
   visibility: visible; /* 滑鼠懸停整行顯示播放按鈕 */
 }
@@ -228,6 +231,7 @@
   background: url('@/assets/play-icon-white.png') no-repeat center center;
   background-size: contain;
   visibility: hidden;
+  cursor: pointer;
 }
 
 .cover:hover .play-icon {

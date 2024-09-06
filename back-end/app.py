@@ -232,7 +232,19 @@ def getPlaylistGridData():
         return jsonify({"error": str(e)}), 500
         
     return jsonify(data)
-            
+
+
+# 找出該首歌在playlist中的Index
+@app.route('/getIndexFromPlaylist/<pid>/<sid>', methods=['GET'])
+@cross_origin()
+def getIndexFromPlaylist(pid, sid):
+    songs = find_playlist(pid)
+    for i, song in enumerate(songs):
+        if int(song['sid']) == int(sid):
+            return jsonify({'index': i})
+    return jsonify({'error': 'Not found'})
+
+
 
 
 if __name__ == '__main__':

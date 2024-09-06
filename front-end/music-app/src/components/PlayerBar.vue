@@ -51,6 +51,8 @@
 
 <script>
 import axios from 'axios';
+import eventBus from '@/eventBus';
+
 export default {
   name: 'PlayerBar',
   data() {
@@ -280,6 +282,28 @@ export default {
         console.error('初始化播放器錯誤: ', error);
       }
     },
+    async reload(songData){
+      if (this.isPlaying) {
+        this.togglePlay();
+      }
+      try {
+        await this.fetchPlaylist(songData.pid);
+        // 修改this.nowIndex
+        const response = await axios.get(`http://127.0.0.1:5000/getIndexFromPlaylist/${songData.pid}/${songData.sid}`);
+        const data = response.data;
+
+        if (data.error) {
+          console.error('歌曲未找到:', data.error);
+        } else {
+          const index = data.index;
+          console.log('歌曲索引:', index);
+          this.currentIndex = index;
+          this.loadSong(true);
+        } 
+      }catch (error) {
+          console.error('reload播放器錯誤: ', error);
+        }
+      },
   },
   watch: {
     /*
@@ -304,9 +328,11 @@ export default {
   mounted() {   // 加入播放列表
     this.initializePlayer(0);
     this.animateProgressBar();
+    eventBus.on('play-song', this.reload); // 監聽 play-song 事件(指定播放歌曲)
   },
   beforeUnmount() {
     cancelAnimationFrame(this.rafId);
+    eventBus.off('play-song', this.reload);
   },
 }
 </script>
