@@ -1,32 +1,10 @@
-import Vuex from 'vuex';
-
 export default new Vuex.Store({
-    state: {
-      isPlaying: false,
-      currentPlaylist: [],
-      currentIndex: 0,
-      currentTime: 0
+  state: {
+    currentSong: null, // 存放當前播放的歌曲
+  },
+  mutations: {
+    setCurrentSong(state, song) {
+      state.currentSong = song;
     },
-    mutations: {
-      setPlaylist(state, playlist) {
-        state.currentPlaylist = playlist;
-      },
-      setCurrentIndex(state, index) {
-        state.currentIndex = index;
-      },
-      setPlaying(state, playing) {
-        state.isPlaying = playing;
-      },
-      setCurrentTime(state, time) {
-        state.currentTime = time;
-      }
-    },
-    actions: {
-      playNext({ commit, state }) {
-        if (state.currentIndex < state.currentPlaylist.length - 1) {
-          commit('setCurrentIndex', state.currentIndex + 1);
-        }
-      },
-    }
-  });
-  
+  },
+});

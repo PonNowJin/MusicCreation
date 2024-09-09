@@ -20,39 +20,75 @@
       </div>
       
       <!-- 歌曲列表區域 -->
-      <div class="playlist-songs">
-        <table>
-          <thead>
-            <tr>
-              <th>歌曲</th>
-              <th></th>
-              <th>藝人</th>
-              <th>專輯</th>
-              <th>時間</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="song in playlist.songs" 
-                :key="song.sid"
-                :class="{'selected': isSelected(song)}"
-                @click="selectSong(song)">
+    <div class="playlist-songs">
+      <table>
+        <thead>
+          <tr>
+            <th>歌曲</th>
+            <th></th>
+            <th>藝人</th>
+            <th>專輯</th>
+            <th>時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="song in playlist.songs"
+            :key="song.sid"
+            :class="{'selected': isSelected(song)}"
+            @click="selectSong(song)"
+          >
             <td>
-                <div class="cover">
-                <img :src="require(`@/assets/Output/img_${song.sid}.png`)" :alt="song.title" class="song-cover">
-                <div class="play-icon" @click.stop="playSong(song.sid)"></div>
-                </div>
+              <div class="cover" 
+                   :class="{ 'playing': isPlaying && currentSong.sid === song.sid ,
+                             'now-pause': !isPlaying && currentSong.sid === song.sid
+                   }"
+                   @mouseover="hoveredSong = song.sid"
+                   @mouseleave="hoveredSong = null">
+
+                <!-- 暫停圖示 -->
+                <img v-if="hoveredSong === song.sid && currentSong.sid === song.sid && isPlaying" 
+                     src="@/assets/pause-icon-white.png" 
+                     alt="Pause" 
+                     class="play-icon" 
+                     @click.stop="togglePlayPause(song)">
+                
+                <!-- 動態播放 gif 動畫 -->
+                <img v-else-if="isPlaying && currentSong.sid === song.sid" 
+                     src="@/assets/play-animation-1.gif" 
+                     alt="Playing" 
+                     class="play-animation">   
+
+                <!-- 當前播放歌曲且暫停時顯示播放圖示，無需滑鼠懸停 -->
+                <img v-else-if="!isPlaying && currentSong.sid === song.sid" 
+                    src="@/assets/play-icon-white.png" 
+                    alt="current-play" 
+                    class="play-icon" 
+                    @click.stop="playSong(song.sid)">
+                     
+                <!-- 預設播放圖示 -->
+                <img v-else 
+                     src="@/assets/play-icon-white.png" 
+                     alt="Play" 
+                     class="play-icon" 
+                     @click.stop="playSong(song.sid)">
+                     
+                <!-- 封面圖 -->
+                <img :src="require(`@/assets/Output/img_${song.sid}.png`)" 
+                     :alt="song.title" 
+                     class="song-cover">
+              </div>
             </td>
             <td>{{ song.title }}</td>
             <td>{{ song.artist }}</td>
             <td>{{ playlist.title }}</td>
             <td>{{ formatDuration(song.duration) }}</td>
-            </tr>
-
-          </tbody>
-        </table>
-      </div>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   import axios from 'axios';
@@ -64,10 +100,47 @@
       return {
         playlist: { songs: [] },
         selectedSong: null,
+        currentSong: null,
+        isPlaying: false,
+        hoveredSong: null,
       };
     },
     mounted() {
       this.fetchPlaylist();
+
+      // 訂閱 PlayerBar 回應的事件，接收當前的歌曲
+      eventBus.on('receiveCurrentSong', (song) => {
+            this.currentSong = song;
+            this.checkCurrentPlayingSong();
+        });
+      eventBus.on('receiveIsPlaying', (isPlaying) => {
+            this.isPlaying = isPlaying;
+      });
+
+      // 發送請求事件，詢問當前的播放歌曲
+      eventBus.emit('requestCurrentSong');
+
+      eventBus.emit('requestIsPlaying');
+    },
+    computed: {
+        playIconVisible() {
+            return (song) => {
+            // 檢查當前歌曲的狀態
+            return this.currentSong.sid === song.sid && !this.isPlaying;
+            };
+        }
+    },
+    beforeUnmount() {
+        // 移除事件監聽，避免重複綁定
+        eventBus.off('receiveCurrentSong');
+    },
+    watch: {
+        currentSong(newSong) {
+            console.log('<PlaylistPage> newSongId: ', newSong.sid);
+        },
+        isPlaying(newVal) {
+            console.log('<PlaylistPage> isPlaying: ', newVal)
+        },
     },
     methods: {
       async fetchPlaylist() {
@@ -92,8 +165,29 @@
         return this.selectedSong && this.selectedSong.sid === song.sid;
       },
       playSong(sid) {
-        const pid = this.$route.params.pid; // 取得 pid
-        eventBus.emit('play-song', { pid, sid });
+        if (this.currentSong.sid === sid && !this.isPlaying) {
+            // 如果當前歌曲已經是這首歌且已暫停，則恢復播放
+            eventBus.emit('togglePlay');
+            this.isPlaying = true;
+        } else {
+            const pid = this.$route.params.pid; // 取得 pid
+            eventBus.emit('play-song', { pid, sid });
+            this.isPlaying = true;
+        }
+      },
+      togglePlayPause(song) {
+        if (this.currentSong.sid === song.sid && this.isPlaying) {
+            eventBus.emit('togglePlay');
+            this.isPlaying = false;
+        } else {
+            this.playSong(song.sid);
+        }
+      },
+      checkCurrentPlayingSong() {
+        // 檢查當前播放的歌曲是否在當前的播放列表中
+        if (this.currentSong && this.playlist.songs.some(song => song.sid === this.currentSong.sid)) {
+            eventBus.emit('requestIsPlaying');
+        }
       },
     }
   };
@@ -130,6 +224,22 @@
 
 .cover {
   position: relative;
+}
+
+/* 播放動畫樣式 */
+.play-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background-size: contain;
+  z-index: 1;
+}
+
+.cover.playing .song-cover {
+  filter: brightness(0.5); /* 播放中的歌曲封面變暗 */
 }
 
 .cover-image {
@@ -228,10 +338,17 @@
   transform: translate(-50%, -50%);
   width: 24px;
   height: 24px;
-  background: url('@/assets/play-icon-white.png') no-repeat center center;
-  background-size: contain;
   visibility: hidden;
+  z-index: 2;
   cursor: pointer;
+}
+
+.cover.playing .play-icon {
+  visibility: visible; /* 播放中的歌曲封面持續顯示播放圖示 */
+}
+
+.cover.now-pause .play-icon {
+    visibility: visible;
 }
 
 .cover:hover .play-icon {
@@ -242,11 +359,15 @@
   width: 20%; /* 平均分配欄位寬度 */
 }
 
+/* 封面圖 */
 .song-cover {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-  border-radius: 12px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  border-radius: 12px;
+}
+
+.cover .song-cover {
+  transition: filter 0.3s ease;
 }
 </style>

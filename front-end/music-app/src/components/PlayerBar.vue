@@ -129,6 +129,9 @@ export default {
         this.duration = this.$refs.audio.duration;
         this.progress = (this.currentTime / this.duration) * 100;
         document.documentElement.style.setProperty('--progress', `${this.progress}%`);
+
+        eventBus.emit('receiveCurrentSong', this.currentSong);
+
         console.log('音樂準備完成')
         if (autoPlay && this.isPlaying==false)
           this.togglePlay();
@@ -159,6 +162,8 @@ export default {
         this.isPlaying = true; // 通過 mutation 更新 isPlaying 狀態
         this.animateProgressBar(); // 啟動動畫
         }
+
+        eventBus.emit('receiveIsPlaying', this.isPlaying);
     },
     // 切換隨機播放模式
     toggleShuffle() {
@@ -329,10 +334,20 @@ export default {
     this.initializePlayer(0);
     this.animateProgressBar();
     eventBus.on('play-song', this.reload); // 監聽 play-song 事件(指定播放歌曲)
+    eventBus.on('requestCurrentSong', () => {
+      // 當接收到請求後，回傳當前的播放歌曲
+      eventBus.emit('receiveCurrentSong', this.currentSong);
+    });
+    eventBus.on('requestIsPlaying', () => {
+      console.log('送出isPlaying: ', this.isPlaying);
+      eventBus.emit('receiveIsPlaying', (this.isPlaying));
+    });
+    eventBus.on('togglePlay', this.togglePlay);
   },
   beforeUnmount() {
     cancelAnimationFrame(this.rafId);
     eventBus.off('play-song', this.reload);
+    eventBus.off('requestCurrentSong');
   },
 }
 </script>
