@@ -169,7 +169,6 @@ export default {
     // 切換隨機播放模式
     async toggleShuffle() {
       this.isShuffle = !this.isShuffle; // 切換隨機播放狀態
-      const play = this.isPlaying;
       if (this.isShuffle) {
         [this.currentPlaylist[0], this.currentPlaylist[this.currentIndex]] = [this.currentPlaylist[this.currentIndex], this.currentPlaylist[0]];
         this.currentIndex = 0;
@@ -628,6 +627,10 @@ export default {
 .volume-container img{
   width: 100%;
   height: 100%;
+}
+
+html, body {
+  overflow: hidden;
 }
 
   </style>

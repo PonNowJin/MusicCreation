@@ -10,10 +10,16 @@
           <img src="@/assets/apple-music-logo.png" alt="logo" />
           <h1>Music</h1>
         </div>
-        <ul>
-          <li>首頁</li>
-          <li>瀏覽</li>
-          <li>廣播</li>
+        <input type="text" placeholder="搜尋" class="search-bar" />
+
+        <!-- 側邊導航按鈕 -->
+        <ul class="nav-items">
+          <li @click="$router.push('/home')" :class="{ 'active-link': $route.path === '/home' }">
+            <span class="nav-text">創作</span>
+          </li>
+          <li @click="$router.push('/all-playlists')" :class="{ 'active-link': $route.path === '/all-playlists' }">
+            <span class="nav-text">播放清單</span>
+          </li>
         </ul>
       </aside>
       <div class="main-content">
@@ -35,36 +41,6 @@ export default {
   components: {
     PlayerBar,
   },
-  data() {
-    return {
-      currentPlaylist: [], // Populate with playlist data
-      currentIndex: 0
-    };
-  },
-  computed: {
-    remainingTime() {
-    return this.formatTime(Math.max(this.duration - this.currentTime, 0)); // 確保剩餘時間不為負數
-    },
-    formattedCurrentTime() {
-      return this.formatTime(this.currentTime);
-    },
-  },
-  methods: {
-    loadPlaylist(playlist) {
-      this.currentPlaylist = playlist;
-      this.currentIndex = 0;
-    },
-    nextSong() {
-      if (this.currentIndex < this.currentPlaylist.length - 1) {
-        this.currentIndex++;
-      }
-    },
-    prevSong() {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
-      }
-    }
-  },
 };
 </script>
 
@@ -78,12 +54,18 @@ export default {
 
 .container {
   display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .main-content {
-  display: flex;
   flex-grow: 1;
-  margin-top: 70px; /* 播放列的高度 */
+  margin-left: 15%; /* 留出側邊欄的空間 */
+  margin-top: 2%;
+  padding: 20px;
+  height: calc(100vh - 70px); /* 減去播放列的高度 */
+  width: calc(100% - 13%); /* 剩下的空間 */
+  overflow-y: auto; /* 讓內容區域具備上下滾動功能 */
 }
 
 .sidebar {
@@ -101,7 +83,6 @@ export default {
 
 .content {
   flex-grow: 1;
-  margin-left: 250px;
   padding: 20px;
   overflow-y: auto;
   height: calc(100vh - 70px); /* 減去播放列的高度 */
@@ -142,6 +123,55 @@ export default {
 .logo img {
   height: 30px;
   margin-right: 10px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.nav-items, .data-library, .playlists {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-items li, .data-library li, .playlists li {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav-items li.active-link {
+  background-color: #e0e0e0;
+  border-radius: 10px;
+}
+
+.nav-items li.active-link {
+  background-color: #ccc; /* 更深的背景色 */
+  border-radius: 10px;
+}
+
+.nav-items li:hover {
+  background-color: #e0e0e0;
+  border-radius: 10px;
+}
+
+.nav-items li .nav-text {
+  margin-left: 20px; /* 文字的 margin-left */
+  color: black;
+  text-decoration: none;
+}
+
+
+
+html, body {
+  overflow: hidden;
 }
 
 

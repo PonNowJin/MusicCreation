@@ -295,6 +295,7 @@
   width: 100%; /* 表格佔滿整個寬度 */
   border-collapse: collapse;
   table-layout: fixed; /* 強制固定表格欄位寬度 */
+  overflow-y: auto;
 }
 
 .playlist-songs th:first-child,
@@ -381,5 +382,9 @@
 
 .cover .song-cover {
   transition: filter 0.3s ease;
+}
+
+html, body {
+  overflow: hidden;
 }
 </style>

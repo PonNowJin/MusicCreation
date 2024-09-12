@@ -106,4 +106,8 @@ export default {
 .playlist-item:hover .cover-image {
   filter: brightness(0.8); /* 滑鼠移入時圖片變暗 */
 }
+
+html, body {
+  overflow: hidden;
+}
 </style>
