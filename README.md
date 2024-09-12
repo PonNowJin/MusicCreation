@@ -37,6 +37,9 @@ npm run serve
 ```
 
 ## Back-end (Flask)
+```bash
+cd back-end
+```
 #### 要求：
 ```bash
 pip install Flask
