@@ -67,6 +67,7 @@ export default {
       currentIndex: 0,
       currentTime: 0,
       rafId: null, // 保存 requestAnimationFrame ID
+      pid: 0,
     };
   },
   computed: {
@@ -166,12 +167,23 @@ export default {
         eventBus.emit('receiveIsPlaying', this.isPlaying);
     },
     // 切換隨機播放模式
-    toggleShuffle() {
+    async toggleShuffle() {
       this.isShuffle = !this.isShuffle; // 切換隨機播放狀態
+      const play = this.isPlaying;
       if (this.isShuffle) {
-        this.shuffleArray(this.currentPlaylist); // 隨機排列播放列表
+        [this.currentPlaylist[0], this.currentPlaylist[this.currentIndex]] = [this.currentPlaylist[this.currentIndex], this.currentPlaylist[0]];
+        this.currentIndex = 0;
+        this.shuffleArray(this.currentPlaylist, true); // 隨機排列播放列表
       } else {
-        this.fetchPlaylist(0); // 重置播放列表為原始順序
+        const old_sid = this.currentPlaylist[this.currentIndex].sid;
+        await this.fetchPlaylist(this.pid); // 重置播放列表為原始順序
+        for (let i=0; i<this.currentPlaylist.length; i++) {
+          if (this.currentPlaylist[i].sid == old_sid) {
+            this.currentIndex = i;
+            break;
+          }
+        }
+        console.error('沒找到(in toggleShuffle)');
       }
     },
     formatTime(seconds) {
@@ -265,7 +277,7 @@ export default {
     shuffleArray(array, hold=true) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        if (i==this.currentIndex && j==this.currentIndex && hold)
+        if ((i==this.currentIndex || j==this.currentIndex) && hold)
           continue;
         [array[i], array[j]] = [array[j], array[i]]; // 交換元素（目前歌曲不變）
       }
@@ -295,6 +307,7 @@ export default {
       }
       try {
         await this.fetchPlaylist(songData.pid);
+        this.pid = songData.pid;
         // 修改this.nowIndex
         const response = await axios.get(`http://127.0.0.1:5000/getIndexFromPlaylist/${songData.pid}/${songData.sid}`);
         const data = response.data;
@@ -305,6 +318,10 @@ export default {
           const index = data.index;
           console.log('歌曲索引:', index);
           this.currentIndex = index;
+          if (this.isShuffle) {
+            this.isShuffle = false; // 由於toggleShuffle 表示按下隨機，因此這邊先將其設為false
+            this.toggleShuffle();
+          }
           this.loadSong(true);
         } 
       }catch (error) {
@@ -323,6 +340,7 @@ export default {
         }
       },
       async randomPlay(pid) {
+        this.isShuffle = true;
         if (this.isPlaying) {
           this.togglePlay();
         }
@@ -370,6 +388,7 @@ export default {
     });
     eventBus.on('togglePlay', this.togglePlay);
     eventBus.on('initializePlayer', (pid) => {
+      this.pid = pid;
       console.log('從頭播放Playlist');
       this.playInOrder(pid);
     });
