@@ -1,0 +1,85 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- 主機： localhost
+-- 產生時間： 2024 年 09 月 12 日 05:45
+-- 伺服器版本： 10.4.28-MariaDB
+-- PHP 版本： 8.2.4
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- 資料庫： `Songs`
+--
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `Songs`
+--
+
+CREATE TABLE `Songs` (
+  `sid` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `path` varchar(255) DEFAULT NULL,
+  `artist` varchar(100) DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
+  `picture` varchar(2000) DEFAULT NULL,
+  `lyrics` varchar(1000) NOT NULL,
+  `audio_url` varchar(2000) DEFAULT NULL,
+  `star` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `Songs`
+--
+
+INSERT INTO `Songs` (`sid`, `title`, `path`, `artist`, `duration`, `picture`, `lyrics`, `audio_url`, `star`) VALUES
+(0, '青花瓷 \n', NULL, '小山雀', NULL, NULL, '(Verse 1)\n白瓷上，一抹藍，輕輕暈染\n歲月的流淌，在指尖輕輕滑過\n花鳥魚蟲，在瓷器上輕盈跳躍\n訴說著古老故事，在時光中沉澱\n\n(Chorus)\n青花瓷，青花瓷，你的秘密藏在何處\n每一筆畫，都訴說著歷史的軌跡\n我輕輕觸碰你，感受你的溫潤與光澤\n仿佛穿越時空，回到那個盛世王朝\n\n(Verse 2)\n匠人的巧手，在瓷器上留下印記\n每一件青花瓷，都像是一件藝術珍寶\n捧著茶杯，細細品味茶香\n那香氣，勾起回憶，在心中輕輕迴盪\n\n(Chorus)\n青花瓷，青花瓷，你的秘密藏在何處\n每一筆畫，都訴說著歷史的軌跡\n我輕輕觸碰你，感受你的溫潤與光澤\n仿佛穿越時空，回到那個盛世王朝\n\n(Bridge)\n青花瓷，青花瓷，你靜靜佇立在時光裡\n見證著王朝興衰，文化的傳承\n你那獨特魅力，深深地吸引著我\n讓我沉醉於你的故事，你的優雅，你的美\n\n(Chorus)\n青花瓷，青花瓷，你的秘密藏在何處\n每一筆畫，都訴說著歷史的軌跡\n我輕輕觸碰你，感受你的溫潤與光澤\n仿佛穿越時空，回到那個盛世王朝\n', 'https://drive.google.com/drive/u/4/folders/1dnTUESRZaUE1uhR5T-l7k64CM6_S-_81', 0),
+(1, '漫遊 \n', NULL, NULL, NULL, NULL, '(Verse 1)\n行李箱裡裝滿了夢想，還有未完成的冒險\n飛機起飛，雲層像棉花糖般柔軟\n窗外風景飛逝，像電影般快速播放\n每個畫面都值得珍藏，成為旅途的紀念章\n\n(Chorus)\n沿途風景，珍貴回憶\n在每個轉角，遇見最美的自己\n旅行的意義，不是抵達終點\n而是沿途風景，讓心靈不斷成長\n\n(Verse 2)\n在異國的街道上，品嘗著香濃的咖啡\n感受著不同的文化，體驗著生命的精彩\n夕陽染紅了天際，映照著我疲憊卻滿足的笑容\n那些走過的風景，那些遇見的人，都化作我生命中的珍寶\n\n(Chorus)\n沿途風景，珍貴回憶\n在每個轉角，遇見最美的自己\n旅行的意義，不是抵達終點\n而是沿途風景，讓心靈不斷成長\n\n(Bridge)\n人生就像一趟旅程，充滿了未知和驚喜\n讓心靈在旅途中不斷蛻變，感受生命的真諦\n\n(Chorus)\n沿途風景，珍貴回憶\n在每個轉角，遇見最美的自己\n旅行的意義，不是抵達終點\n而是沿途風景，讓心靈不斷成長\n', 'https://drive.google.com/drive/u/4/folders/1dnTUESRZaUE1uhR5T-l7k64CM6_S-_81', 0),
+(2, '不難 \n', NULL, NULL, NULL, NULL, '(Verse 1)\n街角那家咖啡店，我們常去坐\n聊著未來，夢想的藍圖，畫滿了牆上\n你說愛是種魔法，能讓世界都變亮\n而我的心，卻被你鎖定，一顆一顆跳\n\n(Chorus)\n說再見不難，就像換季的衣裳\n把舊的收起，新的穿上去，自然而然\n不用留戀，那些甜蜜的過往\n往前走吧，未來充滿希望，陽光燦爛\n\n(Verse 2)\n你牽著我的手，走過繁華的街道\n你笑起來的樣子，像陽光灑在雪地，格外耀眼\n可我知道，我們都像候鳥，總有離開的一天\n飛往不同的天空，追逐著各自的夢\n\n(Chorus)\n說再見不難，就像換季的衣裳\n把舊的收起，新的穿上去，自然而然\n不用留戀，那些甜蜜的過往\n往前走吧，未來充滿希望，陽光燦爛\n\n(Bridge)\n有人說，愛情像盛夏的煙火，燦爛卻短暫\n但我更相信，愛像冬天的暖陽，溫暖而持久\n即使我們分開，也依然珍藏著彼此\n那些回憶，成為心中最美的風景\n\n(Chorus)\n說再見不難，就像換季的衣裳\n把舊的收起，新的穿上去，自然而然\n不用留戀，那些甜蜜的過往\n往前走吧，未來充滿希望，陽光燦爛\n\n(Outro)\n不難，不難\n說再見，真的不難\n你會在新的世界，閃耀光芒\n而我會帶著你的愛，繼續前行 \n', '', 0),
+(3, '不難 \n', NULL, NULL, NULL, NULL, '(Verse 1)\n街角那家咖啡店，我們常去坐\n聊著未來，夢想的藍圖，畫滿了牆上\n你說愛是種魔法，能讓世界都變亮\n而我的心，卻被你鎖定，一顆一顆跳\n\n(Chorus)\n說再見不難，就像換季的衣裳\n把舊的收起，新的穿上去，自然而然\n不用留戀，那些甜蜜的過往\n往前走吧，未來充滿希望，陽光燦爛\n\n(Verse 2)\n你牽著我的手，走過繁華的街道\n你笑起來的樣子，像陽光灑在雪地，格外耀眼\n可我知道，我們都像候鳥，總有離開的一天\n飛往不同的天空，追逐著各自的夢\n\n(Chorus)\n說再見不難，就像換季的衣裳\n把舊的收起，新的穿上去，自然而然\n不用留戀，那些甜蜜的過往\n往前走吧，未來充滿希望，陽光燦爛\n\n(Bridge)\n有人說，愛情像盛夏的煙火，燦爛卻短暫\n但我更相信，愛像冬天的暖陽，溫暖而持久\n即使我們分開，也依然珍藏著彼此\n那些回憶，成為心中最美的風景\n\n(Chorus)\n說再見不難，就像換季的衣裳\n把舊的收起，新的穿上去，自然而然\n不用留戀，那些甜蜜的過往\n往前走吧，未來充滿希望，陽光燦爛\n\n(Outro)\n不難，不難\n說再見，真的不難\n你會在新的世界，閃耀光芒\n而我會帶著你的愛，繼續前行 \n', '', 0),
+(4, '說謊 \n', NULL, NULL, NULL, NULL, '(Verse 1)\n你的眼裡，藏著一顆流星，\n閃爍不定，卻始終不願墜落。\n那些甜蜜的謊言，\n像一場煙火盛宴，瞬間消失在夜空。\n\n(Chorus)\n說謊，你為何要說謊，\n你的謊言，像一陣寒風，吹散了我的夢。\n我曾以為，你是我的依靠，\n如今才發現，你只是個虛幻的鏡像。\n\n(Verse 2)\n我們一起走過，那條漫長的路，\n你說的話，像一首輕柔的歌，\n但我卻在你的歌聲裡，聽見了心碎的聲音，\n你的謊言，像一把利刃，刺穿了我的心。\n\n(Chorus)\n說謊，你為何要說謊，\n你的謊言，像一陣寒風，吹散了我的夢。\n我曾以為，你是我的依靠，\n如今才發現，你只是個虛幻的鏡像。\n\n(Bridge)\n你說的話，就像一杯苦澀的咖啡，\n讓我清醒地認識到，你早已不再愛我。\n我試著去理解，你的謊言，\n但你的解釋，卻更像是一場欺騙的遊戲。\n\n(Chorus)\n說謊，你為何要說謊，\n你的謊言，像一陣寒風，吹散了我的夢。\n我曾以為，你是我的依靠，\n如今才發現，你只是個虛幻的鏡像。\n\n(Outro)\n說謊，說謊，你為什麼要說謊，\n你的謊言，讓我失去了所有希望。\n我只能在回憶裡，尋找你的身影，\n在夜裡，不停地追問，你為什麼要說謊？\n', '', 0),
+(5, '說謊 \n', NULL, NULL, NULL, NULL, '(Verse 1)\n你的眼裡，藏著一顆流星，\n閃爍不定，卻始終不願墜落。\n那些甜蜜的謊言，\n像一場煙火盛宴，瞬間消失在夜空。\n\n(Chorus)\n說謊，你為何要說謊，\n你的謊言，像一陣寒風，吹散了我的夢。\n我曾以為，你是我的依靠，\n如今才發現，你只是個虛幻的鏡像。\n\n(Verse 2)\n我們一起走過，那條漫長的路，\n你說的話，像一首輕柔的歌，\n但我卻在你的歌聲裡，聽見了心碎的聲音，\n你的謊言，像一把利刃，刺穿了我的心。\n\n(Chorus)\n說謊，你為何要說謊，\n你的謊言，像一陣寒風，吹散了我的夢。\n我曾以為，你是我的依靠，\n如今才發現，你只是個虛幻的鏡像。\n\n(Bridge)\n你說的話，就像一杯苦澀的咖啡，\n讓我清醒地認識到，你早已不再愛我。\n我試著去理解，你的謊言，\n但你的解釋，卻更像是一場欺騙的遊戲。\n\n(Chorus)\n說謊，你為何要說謊，\n你的謊言，像一陣寒風，吹散了我的夢。\n我曾以為，你是我的依靠，\n如今才發現，你只是個虛幻的鏡像。\n\n(Outro)\n說謊，說謊，你為什麼要說謊，\n你的謊言，讓我失去了所有希望。\n我只能在回憶裡，尋找你的身影，\n在夜裡，不停地追問，你為什麼要說謊？\n', '', 0),
+(6, '千年之戀 \n', NULL, NULL, NULL, NULL, '(Verse 1)\n千年古城，石板路蜿蜒\n我遇見你，在月光下翩翩\n你眼中的星辰，閃爍著光芒\n照亮我迷茫，指引我方向\n\n(Chorus)\n千年之戀，跨越時空長河\n你是我心房，最溫暖角落\n縱然歲月流逝，依然如故\n我們的心，緊緊相依，永不分離\n\n(Verse 2)\n你說，愛情是海上的燈塔\n指引著航行，抵達彼岸\n我說，愛情是沙漠中的綠洲\n滋潤著心田，帶來希望\n\n(Chorus)\n千年之戀，跨越時空長河\n你是我心房，最溫暖角落\n縱然歲月流逝，依然如故\n我們的心，緊緊相依，永不分離\n\n(Bridge)\n穿越千年時空，我找到你\n你是我唯一，此生最愛的人\n時空阻隔，無法阻擋愛\n我們的心，緊緊相連，永不分離\n\n(Chorus)\n千年之戀，跨越時空長河\n你是我心房，最溫暖角落\n縱然歲月流逝，依然如故\n我們的心，緊緊相依，永不分離\n\n(Outro)\n千年之戀，永恆的誓言\n愛是唯一，讓我們永遠相依\n', '', 0),
+(7, '千年之戀 \n', NULL, NULL, NULL, NULL, '(Verse 1)\n千年古城，石板路蜿蜒\n我遇見你，在月光下翩翩\n你眼中的星辰，閃爍著光芒\n照亮我迷茫，指引我方向\n\n(Chorus)\n千年之戀，跨越時空長河\n你是我心房，最溫暖角落\n縱然歲月流逝，依然如故\n我們的心，緊緊相依，永不分離\n\n(Verse 2)\n你說，愛情是海上的燈塔\n指引著航行，抵達彼岸\n我說，愛情是沙漠中的綠洲\n滋潤著心田，帶來希望\n\n(Chorus)\n千年之戀，跨越時空長河\n你是我心房，最溫暖角落\n縱然歲月流逝，依然如故\n我們的心，緊緊相依，永不分離\n\n(Bridge)\n穿越千年時空，我找到你\n你是我唯一，此生最愛的人\n時空阻隔，無法阻擋愛\n我們的心，緊緊相連，永不分離\n\n(Chorus)\n千年之戀，跨越時空長河\n你是我心房，最溫暖角落\n縱然歲月流逝，依然如故\n我們的心，緊緊相依，永不分離\n\n(Outro)\n千年之戀，永恆的誓言\n愛是唯一，讓我們永遠相依\n', '', 0),
+(8, '不能說的秘密 \n', NULL, '', NULL, 'https://drive.google.com/file/d/10JfqlIe8qn-lN4L_wHtXB342y5DzveaE/view?usp=drivesdk', '(Verse 1)\r\n街燈昏黃，影子拉長，我走在回家的路上\r\n腦海裡都是你的模樣，像是電影裡的片段\r\n想說出口的話，卻又害怕被你拒絕\r\n只能把秘密，藏在心裡，默默守護\r\n\r\n(Chorus)\r\n不能說的秘密，像一朵盛開的玫瑰\r\n美麗卻帶刺，讓人又愛又怕\r\n想念你的溫柔，想念你的笑容\r\n卻只能在夢裡，偷偷地擁抱\r\n\r\n(Verse 2)\r\n雨滴敲打著窗戶，就像你輕輕地呼喚\r\n我閉上眼睛，回憶我們曾經的片段\r\n你說過的話，你做過的事，都像烙印一樣\r\n永遠留在我心裡，揮之不去\r\n\r\n(Chorus)\r\n不能說的秘密，像一朵盛開的玫瑰\r\n美麗卻帶刺，讓人又愛又怕\r\n想念你的溫柔，想念你的笑容\r\n卻只能在夢裡，偷偷地擁抱\r\n\r\n(Bridge)\r\n我知道，有些事，無法改變\r\n就像時間一樣，不停地向前\r\n但我依然相信，真愛不會消失\r\n就算不能說出口，它也會永遠存在\r\n\r\n(Chorus)\r\n不能說的秘密，像一朵盛開的玫瑰\r\n美麗卻帶刺，讓人又愛又怕\r\n想念你的溫柔，想念你的笑容\r\n卻只能在夢裡，偷偷地擁抱\r\n\r\n(Outro)\r\n不能說的秘密，就讓它永遠封存\r\n在心裡，在夢裡，在時間的長河裡\r\n', 'https://drive.google.com/file/d/1HTz0dynXB4DYIOmm243ZNBbVgN0aDTng/view?usp=drivesdk', 0),
+(9, '不能說的秘密 \n', NULL, '', NULL, 'https://drive.google.com/file/d/1ArWFJPjv5R3YqA5Asn72xKqM2iXblMiu/view?usp=drivesdk', '(Verse 1)\r\n街燈昏黃，影子拉長，我走在回家的路上\r\n腦海裡都是你的模樣，像是電影裡的片段\r\n想說出口的話，卻又害怕被你拒絕\r\n只能把秘密，藏在心裡，默默守護\r\n\r\n(Chorus)\r\n不能說的秘密，像一朵盛開的玫瑰\r\n美麗卻帶刺，讓人又愛又怕\r\n想念你的溫柔，想念你的笑容\r\n卻只能在夢裡，偷偷地擁抱\r\n\r\n(Verse 2)\r\n雨滴敲打著窗戶，就像你輕輕地呼喚\r\n我閉上眼睛，回憶我們曾經的片段\r\n你說過的話，你做過的事，都像烙印一樣\r\n永遠留在我心裡，揮之不去\r\n\r\n(Chorus)\r\n不能說的秘密，像一朵盛開的玫瑰\r\n美麗卻帶刺，讓人又愛又怕\r\n想念你的溫柔，想念你的笑容\r\n卻只能在夢裡，偷偷地擁抱\r\n\r\n(Bridge)\r\n我知道，有些事，無法改變\r\n就像時間一樣，不停地向前\r\n但我依然相信，真愛不會消失\r\n就算不能說出口，它也會永遠存在\r\n\r\n(Chorus)\r\n不能說的秘密，像一朵盛開的玫瑰\r\n美麗卻帶刺，讓人又愛又怕\r\n想念你的溫柔，想念你的笑容\r\n卻只能在夢裡，偷偷地擁抱\r\n\r\n(Outro)\r\n不能說的秘密，就讓它永遠封存\r\n在心裡，在夢裡，在時間的長河裡\r\n\r\n', 'https://drive.google.com/file/d/1wQLGQQ4GJOCkCkOpw6BPLnWDD0lj8BgP/view?usp=drivesdk', 0),
+(10, '用餘生去愛 \n', NULL, NULL, NULL, 'https://drive.google.com/uc?id=1ihnPgVvTafhn_bQJwRA8YNeId-WT8QZb\r\n', '(Verse 1)\n午後陽光，灑在咖啡館窗台\n你低頭閱讀，我靜靜地欣賞\n那時的我，還不懂愛情滋味\n卻被你眼中的溫柔，深深吸引\n\n(Chorus)\n用餘生去愛，這是我的真心話\n每一天都像初戀，甜蜜又期待\n想牽著你的手，走過漫漫長路\n陪你一起看日出，看夕陽落下\n\n(Verse 2)\n我們漫步在海邊，海風輕輕吹過\n你靠在我的肩上，我緊緊擁抱著\n你說想看極光，我許下諾言\n帶你去遙遠國度，看極光閃耀\n\n(Chorus)\n用餘生去愛，這是我的真心話\n每一天都像初戀，甜蜜又期待\n想牽著你的手，走過漫漫長路\n陪你一起看日出，看夕陽落下\n\n(Bridge)\n生活像一首旋律，有高低起伏\n但只要有你在身邊，一切都值得\n你是我生命中最美的風景\n讓我願意用一生去守護你\n\n(Chorus)\n用餘生去愛，這是我的真心話\n每一天都像初戀，甜蜜又期待\n想牽著你的手，走過漫漫長路\n陪你一起看日出，看夕陽落下\n', 'https://drive.google.com/uc?id=1uHfUq5aTLMWjt78YYXZc_XLoMERL9bTS&export=embed\r\n', 0),
+(11, '用餘生去愛 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1QtM9lPklbHSit8Uo3pX-E7Nsd7EoVTar/view?usp=drivesdk', '(Verse 1)\n午後陽光，灑在咖啡館窗台\n你低頭閱讀，我靜靜地欣賞\n那時的我，還不懂愛情滋味\n卻被你眼中的溫柔，深深吸引\n\n(Chorus)\n用餘生去愛，這是我的真心話\n每一天都像初戀，甜蜜又期待\n想牽著你的手，走過漫漫長路\n陪你一起看日出，看夕陽落下\n\n(Verse 2)\n我們漫步在海邊，海風輕輕吹過\n你靠在我的肩上，我緊緊擁抱著\n你說想看極光，我許下諾言\n帶你去遙遠國度，看極光閃耀\n\n(Chorus)\n用餘生去愛，這是我的真心話\n每一天都像初戀，甜蜜又期待\n想牽著你的手，走過漫漫長路\n陪你一起看日出，看夕陽落下\n\n(Bridge)\n生活像一首旋律，有高低起伏\n但只要有你在身邊，一切都值得\n你是我生命中最美的風景\n讓我願意用一生去守護你\n\n(Chorus)\n用餘生去愛，這是我的真心話\n每一天都像初戀，甜蜜又期待\n想牽著你的手，走過漫漫長路\n陪你一起看日出，看夕陽落下\n', 'https://drive.google.com/file/d/18hlEtic3GMjbnuCpejNM2Pob5V2AT6gU/view?usp=drivesdk', 0),
+(12, '想你入眠 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1YSw7q2cyOD4MTmyOO8umOf6Uutr_pQ8-/view?usp=drivesdk', '(Verse 1)\n街角的咖啡香，是你留下的味道\n那時我們並肩坐著，你輕輕說\n關於未來的夢，還有對彼此的承諾\n每一句都像蜜糖，甜到心窩\n\n(Chorus)\n想你，像陽光灑落窗台，溫暖著我的心房\n想你，像夜晚的星星閃耀，照亮我前行的方向\n\n(Verse 2)\n你的笑聲，你的眼眸，你的溫柔\n都深深地刻在我的記憶裡\n那些甜蜜的時光，像電影片段\n一遍又一遍播放，讓我心醉不已\n\n(Chorus)\n想你，像陽光灑落窗台，溫暖著我的心房\n想你，像夜晚的星星閃耀，照亮我前行的方向\n\n(Bridge)\n思念像藤蔓，纏繞著我的心\n每一個角落，都有你的身影\n你是否也和我一樣，在想念\n那些曾經擁有的美好時光\n\n(Chorus)\n想你，像陽光灑落窗台，溫暖著我的心房\n想你，像夜晚的星星閃耀，照亮我前行的方向\n\n(Outro)\n想你，想你，直到永遠\n你的愛，是我的唯一方向 \n', 'https://drive.google.com/file/d/1KqaSIARAORFmLPFlA49mjOYdT9NjwVo0/view?usp=drivesdk', 0),
+(13, '想你入眠 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1iffldwxyuH7CSKIIbfSylp-koNKXfGLx/view?usp=drivesdk', '(Verse 1)\n街角的咖啡香，是你留下的味道\n那時我們並肩坐著，你輕輕說\n關於未來的夢，還有對彼此的承諾\n每一句都像蜜糖，甜到心窩\n\n(Chorus)\n想你，像陽光灑落窗台，溫暖著我的心房\n想你，像夜晚的星星閃耀，照亮我前行的方向\n\n(Verse 2)\n你的笑聲，你的眼眸，你的溫柔\n都深深地刻在我的記憶裡\n那些甜蜜的時光，像電影片段\n一遍又一遍播放，讓我心醉不已\n\n(Chorus)\n想你，像陽光灑落窗台，溫暖著我的心房\n想你，像夜晚的星星閃耀，照亮我前行的方向\n\n(Bridge)\n思念像藤蔓，纏繞著我的心\n每一個角落，都有你的身影\n你是否也和我一樣，在想念\n那些曾經擁有的美好時光\n\n(Chorus)\n想你，像陽光灑落窗台，溫暖著我的心房\n想你，像夜晚的星星閃耀，照亮我前行的方向\n\n(Outro)\n想你，想你，直到永遠\n你的愛，是我的唯一方向 \n', 'https://drive.google.com/file/d/1GjoGGAVfYnlDAw1BNc-hAqQtt-X0eMHv/view?usp=drivesdk', 0),
+(14, '夜間偵訊 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1sSP_FOhrNoJXDdiRJJD_PFfX4YWAu6sP/view?usp=drivesdk', '(Verse 1)\n深夜的燈光，照亮你緊閉的雙眼\n沉默的房間，只剩下你的呼吸和心跳聲\n牆上的時鐘，滴答滴答，像催命符一樣\n你緊握雙手，卻遮掩不住那份不安\n\n(Chorus)\n夜間偵訊，你是否早已筋疲力盡？\n我手中的筆，記錄著你的謊言和沉默\n你的眼神飄忽，像夜空中的迷霧般\n真相，就在你心中，等待被揭開的一瞬間\n\n(Verse 2)\n你說的話語，像迷宮般的迴廊\n我仔細聆聽，尋找你話語中的漏洞\n窗外雨聲，像你的心聲一樣，滴答滴答\n你試圖用謊言，去掩蓋那被掩埋的秘密\n\n(Chorus)\n夜間偵訊，你是否早已筋疲力盡？\n我手中的筆，記錄著你的謊言和沉默\n你的眼神飄忽，像夜空中的迷霧般\n真相，就在你心中，等待被揭開的一瞬間\n\n(Bridge)\n夜深了，窗外的雨聲漸漸停歇\n你最終選擇坦白，放下所有的偽裝\n你的眼角泛起淚光，像夜空中閃爍的星辰\n你說出真相，也釋放了壓抑已久的沉重\n\n(Chorus)\n夜間偵訊，你是否早已筋疲力盡？\n我手中的筆，記錄著你的謊言和沉默\n你的眼神飄忽，像夜空中的迷霧般\n真相，就在你心中，等待被揭開的一瞬間\n', 'https://drive.google.com/file/d/1UIaYPxQWW8htIqXrd2eJALSLxnQS7zU5/view?usp=drivesdk', 0),
+(15, '夜間偵訊 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/10YFRs4wPmWcpg6pCB-M6Ab-Jn0EaTtqs/view?usp=drivesdk', '(Verse 1)\n深夜的燈光，照亮你緊閉的雙眼\n沉默的房間，只剩下你的呼吸和心跳聲\n牆上的時鐘，滴答滴答，像催命符一樣\n你緊握雙手，卻遮掩不住那份不安\n\n(Chorus)\n夜間偵訊，你是否早已筋疲力盡？\n我手中的筆，記錄著你的謊言和沉默\n你的眼神飄忽，像夜空中的迷霧般\n真相，就在你心中，等待被揭開的一瞬間\n\n(Verse 2)\n你說的話語，像迷宮般的迴廊\n我仔細聆聽，尋找你話語中的漏洞\n窗外雨聲，像你的心聲一樣，滴答滴答\n你試圖用謊言，去掩蓋那被掩埋的秘密\n\n(Chorus)\n夜間偵訊，你是否早已筋疲力盡？\n我手中的筆，記錄著你的謊言和沉默\n你的眼神飄忽，像夜空中的迷霧般\n真相，就在你心中，等待被揭開的一瞬間\n\n(Bridge)\n夜深了，窗外的雨聲漸漸停歇\n你最終選擇坦白，放下所有的偽裝\n你的眼角泛起淚光，像夜空中閃爍的星辰\n你說出真相，也釋放了壓抑已久的沉重\n\n(Chorus)\n夜間偵訊，你是否早已筋疲力盡？\n我手中的筆，記錄著你的謊言和沉默\n你的眼神飄忽，像夜空中的迷霧般\n真相，就在你心中，等待被揭開的一瞬間\n', 'https://drive.google.com/file/d/1sXsSzDhzcJ_oCiASybQoSsRsEL89S1XF/view?usp=drivesdk', 0),
+(16, '你要的愛 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1VSCxjzWnMtEPSJTGCeAU9Foq3BzQ-gj8/view?usp=drivesdk', '(Verse 1)\n午夜的鐘聲敲響，城市還在夢裡沉睡\n我卻在翻閱著照片，回憶你的臉龐\n你說要的愛，像夏天的冰淇淋\n甜甜蜜蜜，融化在心間\n\n(Chorus)\n你要的愛，是自由的風，是溫暖的陽光\n是雨後的彩虹，是繁星點點的夜空\n你要的愛，是浪漫的約會，是溫馨的家\n是漫漫人生路，永遠相依相伴\n\n(Verse 2)\n雨滴敲打窗，風兒輕輕哼著歌\n思念像海浪，一陣陣湧上心頭\n你說要的愛，是簡單的陪伴\n是一起看日出，一起度過平凡的每一天\n\n(Chorus)\n你要的愛，是自由的風，是溫暖的陽光\n是雨後的彩虹，是繁星點點的夜空\n你要的愛，是浪漫的約會，是溫馨的家\n是漫漫人生路，永遠相依相伴\n\n(Bridge)\n我知道，我們都曾迷失方向\n但愛會指引我們，找到彼此的港灣\n你要的愛，我會用生命守護\n因為你的愛，是我心中最美的風景\n\n(Chorus)\n你要的愛，是自由的風，是溫暖的陽光\n是雨後的彩虹，是繁星點點的夜空\n你要的愛，是浪漫的約會，是溫馨的家\n是漫漫人生路，永遠相依相伴\n\n(Outro)\n你要的愛，就在這裡\n我會一直陪伴你，直到永遠。\n\n\n', 'https://drive.google.com/file/d/1n5Rwx7Q5HOkJwZJzVHvOBw9C8oToG4PU/view?usp=drivesdk', 0),
+(17, '你要的愛 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1kvy_WNp32uthROpW5LqhIjgdjTtGSVkm/view?usp=drivesdk', '(Verse 1)\n午夜的鐘聲敲響，城市還在夢裡沉睡\n我卻在翻閱著照片，回憶你的臉龐\n你說要的愛，像夏天的冰淇淋\n甜甜蜜蜜，融化在心間\n\n(Chorus)\n你要的愛，是自由的風，是溫暖的陽光\n是雨後的彩虹，是繁星點點的夜空\n你要的愛，是浪漫的約會，是溫馨的家\n是漫漫人生路，永遠相依相伴\n\n(Verse 2)\n雨滴敲打窗，風兒輕輕哼著歌\n思念像海浪，一陣陣湧上心頭\n你說要的愛，是簡單的陪伴\n是一起看日出，一起度過平凡的每一天\n\n(Chorus)\n你要的愛，是自由的風，是溫暖的陽光\n是雨後的彩虹，是繁星點點的夜空\n你要的愛，是浪漫的約會，是溫馨的家\n是漫漫人生路，永遠相依相伴\n\n(Bridge)\n我知道，我們都曾迷失方向\n但愛會指引我們，找到彼此的港灣\n你要的愛，我會用生命守護\n因為你的愛，是我心中最美的風景\n\n(Chorus)\n你要的愛，是自由的風，是溫暖的陽光\n是雨後的彩虹，是繁星點點的夜空\n你要的愛，是浪漫的約會，是溫馨的家\n是漫漫人生路，永遠相依相伴\n\n(Outro)\n你要的愛，就在這裡\n我會一直陪伴你，直到永遠。\n\n\n', 'https://drive.google.com/file/d/17PC4uzQjbrYHWCGisDWQgb5uh4nWxUVl/view?usp=drivesdk', 0),
+(18, '小步舞曲 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/13s5RD5YX1WwqPrfF7GJPhEJChja7rppO/view?usp=drivesdk', '(Verse 1)\n太陽公公，笑眯眯\n把我的臉龐，曬得紅紅\n拋開煩惱，心放輕鬆\n小步舞曲，輕輕哼\n\n(Chorus)\n輕快的旋律，舞動心房\n自由的步伐，無憂無慮\n快樂的音符，跳動在心間\n讓幸福蔓延，無處不在\n\n(Verse 2)\n微風輕拂，吹過髮梢\n花香四溢，香氣繞\n世界繽紛，充滿希望\n每一天都是，美好的奇遇\n\n(Chorus)\n輕快的旋律，舞動心房\n自由的步伐，無憂無慮\n快樂的音符，跳動在心間\n讓幸福蔓延，無處不在\n\n(Bridge)\n生活偶爾，會有陰影\n但只要抬頭，就能看見光明\n小步舞曲，永遠伴隨\n讓我們一起，追逐夢想\n\n(Chorus)\n輕快的旋律，舞動心房\n自由的步伐，無憂無慮\n快樂的音符，跳動在心間\n讓幸福蔓延，無處不在 \n', 'https://drive.google.com/file/d/14BAUYLUE8vWiD3cZd2O1fbq5G5AWtzzH/view?usp=drivesdk', 0),
+(19, '小步舞曲 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1uDurItiryUfAF5IA-fCBvNLljsEF4kXT/view?usp=drivesdk', '(Verse 1)\n太陽公公，笑眯眯\n把我的臉龐，曬得紅紅\n拋開煩惱，心放輕鬆\n小步舞曲，輕輕哼\n\n(Chorus)\n輕快的旋律，舞動心房\n自由的步伐，無憂無慮\n快樂的音符，跳動在心間\n讓幸福蔓延，無處不在\n\n(Verse 2)\n微風輕拂，吹過髮梢\n花香四溢，香氣繞\n世界繽紛，充滿希望\n每一天都是，美好的奇遇\n\n(Chorus)\n輕快的旋律，舞動心房\n自由的步伐，無憂無慮\n快樂的音符，跳動在心間\n讓幸福蔓延，無處不在\n\n(Bridge)\n生活偶爾，會有陰影\n但只要抬頭，就能看見光明\n小步舞曲，永遠伴隨\n讓我們一起，追逐夢想\n\n(Chorus)\n輕快的旋律，舞動心房\n自由的步伐，無憂無慮\n快樂的音符，跳動在心間\n讓幸福蔓延，無處不在 \n', 'https://drive.google.com/file/d/1W8JnCVrmJadYJ8ApdlgbUF3SWqdndgru/view?usp=drivesdk', 0),
+(20, '手機、錢包、鑰匙、煙 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1zJf6-IsfIeO8VWM9GpaNvJi4g3ZvT0zY/view?usp=drivesdk', '(Verse 1)\n鬧鐘響，手機亮，螢幕上滿滿訊息\n一早起床就開始，追趕著時間的節奏\n咖啡香，早餐味，匆匆忙忙塞進嘴\n腦海裡想的，卻是昨晚那個夢，你依舊笑著\n\n(Chorus)\n手機、錢包、鑰匙、煙，都市男的標配\n穿梭在水泥叢林，每天都上演著同樣戲碼\n渴望自由，卻被現實綁住腳步\n眼看著時間流逝，心裡卻無奈地嘆息\n\n(Verse 2)\n地鐵裡，人潮涌動，每個人都像一顆棋子\n追逐著夢想，也躲避著現實的壓力\n工作忙，生活累，卻也不願停下腳步\n因為我知道，不努力就會被這城市淘汰\n\n(Chorus)\n手機、錢包、鑰匙、煙，都市男的標配\n穿梭在水泥叢林，每天都上演著同樣戲碼\n渴望自由，卻被現實綁住腳步\n眼看著時間流逝，心裡卻無奈地嘆息\n\n(Bridge)\n深夜裡，點燃一根煙，看著窗外的燈火\n思緒漫無目的地飄蕩，想著那遙不可及的夢想\n也許這就是生活，有歡笑，也有淚水\n但我們總要繼續前行，尋找屬於自己的光亮\n\n(Chorus)\n手機、錢包、鑰匙、煙，都市男的標配\n穿梭在水泥叢林，每天都上演著同樣戲碼\n渴望自由，卻被現實綁住腳步\n眼看著時間流逝，心裡卻無奈地嘆息\n\n(Outro)\n手機、錢包、鑰匙、煙，它們都是我的夥伴\n陪伴我走過每一天，無論是喜怒哀樂\n或許明天會更好，或許明天會更糟\n但我會帶著希望，繼續走下去，不讓夢想沉沒\n\n', 'https://drive.google.com/file/d/1WU27WusJcNs26i9Qb9oHPpkYQXqlbwwd/view?usp=drivesdk', 0),
+(21, '手機、錢包、鑰匙、煙 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1wpTJImLEiKMJkEuTibRg527M6BAZYpnw/view?usp=drivesdk', '(Verse 1)\n鬧鐘響，手機亮，螢幕上滿滿訊息\n一早起床就開始，追趕著時間的節奏\n咖啡香，早餐味，匆匆忙忙塞進嘴\n腦海裡想的，卻是昨晚那個夢，你依舊笑著\n\n(Chorus)\n手機、錢包、鑰匙、煙，都市男的標配\n穿梭在水泥叢林，每天都上演著同樣戲碼\n渴望自由，卻被現實綁住腳步\n眼看著時間流逝，心裡卻無奈地嘆息\n\n(Verse 2)\n地鐵裡，人潮涌動，每個人都像一顆棋子\n追逐著夢想，也躲避著現實的壓力\n工作忙，生活累，卻也不願停下腳步\n因為我知道，不努力就會被這城市淘汰\n\n(Chorus)\n手機、錢包、鑰匙、煙，都市男的標配\n穿梭在水泥叢林，每天都上演著同樣戲碼\n渴望自由，卻被現實綁住腳步\n眼看著時間流逝，心裡卻無奈地嘆息\n\n(Bridge)\n深夜裡，點燃一根煙，看著窗外的燈火\n思緒漫無目的地飄蕩，想著那遙不可及的夢想\n也許這就是生活，有歡笑，也有淚水\n但我們總要繼續前行，尋找屬於自己的光亮\n\n(Chorus)\n手機、錢包、鑰匙、煙，都市男的標配\n穿梭在水泥叢林，每天都上演著同樣戲碼\n渴望自由，卻被現實綁住腳步\n眼看著時間流逝，心裡卻無奈地嘆息\n\n(Outro)\n手機、錢包、鑰匙、煙，它們都是我的夥伴\n陪伴我走過每一天，無論是喜怒哀樂\n或許明天會更好，或許明天會更糟\n但我會帶著希望，繼續走下去，不讓夢想沉沒\n\n', 'https://drive.google.com/file/d/1yCsdFeJaQIT1ymtH1KFWZVL05mIo5tcZ/view?usp=drivesdk', 0),
+(22, '夜空中最亮的星 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1KVxPwhHNYgP8tKAGPwhwXhpW4K694BFP/view?usp=drivesdk', '(Verse 1)\n夜空深邃，星光閃爍\n像夢想的種子，在心中播種\n我抬頭凝望，那最亮的星辰\n它像在低語，勇敢追尋\n\n(Chorus)\n夜空中最亮的星，指引著方向\n夢想的路途，充滿未知的迷霧\n但你的光芒，照亮我的心房\n讓我堅定信念，勇往直前，永不退縮\n\n(Verse 2)\n城市的燈火，繁華又迷人\n有時會讓人，迷失在其中\n但只要想起，你那閃爍的光芒\n就能重新振作，繼續追夢的旅程\n\n(Chorus)\n夜空中最亮的星，指引著方向\n夢想的路途，充滿未知的迷霧\n但你的光芒，照亮我的心房\n讓我堅定信念，勇往直前，永不退縮\n\n(Bridge)\n就算跌倒，就算失敗\n也要相信，夢想終會實現\n因為你的光芒，永遠照耀著我\n給我力量，讓我無懼風雨\n\n(Chorus)\n夜空中最亮的星，指引著方向\n夢想的路途，充滿未知的迷霧\n但你的光芒，照亮我的心房\n讓我堅定信念，勇往直前，永不退縮 \n', 'https://drive.google.com/file/d/1AfavQI_hUmvcTWvkTqt5l7mV6UECKOX0/view?usp=drivesdk', 0),
+(23, '夜空中最亮的星 \n', NULL, NULL, NULL, 'https://drive.google.com/file/d/1l5VYBWLdSZ4E1UBANUZjZc4tj-YlGecr/view?usp=drivesdk', '(Verse 1)\n夜空深邃，星光閃爍\n像夢想的種子，在心中播種\n我抬頭凝望，那最亮的星辰\n它像在低語，勇敢追尋\n\n(Chorus)\n夜空中最亮的星，指引著方向\n夢想的路途，充滿未知的迷霧\n但你的光芒，照亮我的心房\n讓我堅定信念，勇往直前，永不退縮\n\n(Verse 2)\n城市的燈火，繁華又迷人\n有時會讓人，迷失在其中\n但只要想起，你那閃爍的光芒\n就能重新振作，繼續追夢的旅程\n\n(Chorus)\n夜空中最亮的星，指引著方向\n夢想的路途，充滿未知的迷霧\n但你的光芒，照亮我的心房\n讓我堅定信念，勇往直前，永不退縮\n\n(Bridge)\n就算跌倒，就算失敗\n也要相信，夢想終會實現\n因為你的光芒，永遠照耀著我\n給我力量，讓我無懼風雨\n\n(Chorus)\n夜空中最亮的星，指引著方向\n夢想的路途，充滿未知的迷霧\n但你的光芒，照亮我的心房\n讓我堅定信念，勇往直前，永不退縮 \n', 'https://drive.google.com/file/d/1QOK-w_YVxqG3NYjRWMAhE4_MZYDIeKqj/view?usp=drivesdk', 0);
+
+--
+-- 已傾印資料表的索引
+--
+
+--
+-- 資料表索引 `Songs`
+--
+ALTER TABLE `Songs`
+  ADD PRIMARY KEY (`sid`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
