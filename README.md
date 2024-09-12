@@ -22,7 +22,8 @@ pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-
 #### OUTPUT
 產出歌詞檔、音樂風格、音樂檔、封面
 
-# 介面 (可單獨測試，須設定.env，google雲端可以跳過)
+# 介面 
+## (可單獨測試，須設定.env，google雲端可以跳過)
 ## Front-end (Vue)
 ```bash
 cd front-end/music-app
@@ -54,7 +55,7 @@ python3 app.py
 python app.py
 ```
 
-## Others
+# Others
 環境建置部分可能有缺失，如有遺漏再提醒我補充，感謝！
 
 
