@@ -13,6 +13,7 @@ Google雲端
 ```bash
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 ```
+需要開啟database server (參數設定在.env中)，使用Songs.sql匯入資料庫
 
 #### 用法：
 1. 建檔.env，設定環境變數，參考.env.example (目前有上傳到google drive雲端硬碟的程式碼但未使用，可以參考：https://medium.com/ai-academy-taiwan/google-drive-api-python-%E5%BE%9E0%E9%96%8B%E5%A7%8B%E5%88%B0%E5%BE%9Eurl%E4%B8%8B%E8%BC%89%E6%AA%94%E6%A1%88%E7%AF%84%E4%BE%8B-a182ce279073 設定金鑰等參數)
@@ -45,7 +46,6 @@ cd back-end
 ```bash
 pip install Flask
 ```
-需要開啟database server (參數設定在.env中)
 #### 執行：
 ```bash
 python3 app.py
