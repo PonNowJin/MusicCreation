@@ -261,12 +261,13 @@ export default {
           this.loadSong();
         }
     },
-    // 隨機打亂數組
-    shuffleArray(array) {
+    // 隨機打亂數組 (hold表示不會動到目前播放的歌曲)
+    shuffleArray(array, hold=true) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        if (i!=this.currentIndex && j!=this.currentIndex)
-          [array[i], array[j]] = [array[j], array[i]]; // 交換元素（目前歌曲不變）
+        if (i==this.currentIndex && j==this.currentIndex && hold)
+          continue;
+        [array[i], array[j]] = [array[j], array[i]]; // 交換元素（目前歌曲不變）
       }
     },
     async fetchPlaylist(pid) {
@@ -279,6 +280,7 @@ export default {
       }
     },
     async initializePlayer(pid) {
+      this.currentIndex = 0;
       try {
         await this.fetchPlaylist(pid);
         this.loadSong();
@@ -309,6 +311,30 @@ export default {
           console.error('reload播放器錯誤: ', error);
         }
       },
+      async playInOrder(pid) {
+        if (this.isPlaying) {
+          this.togglePlay();
+        }
+        try {
+          await this.initializePlayer(pid);
+          this.togglePlay();
+        }catch (error) {
+          console.error('playInOrder錯誤: ', error);
+        }
+      },
+      async randomPlay(pid) {
+        if (this.isPlaying) {
+          this.togglePlay();
+        }
+        try {
+          await this.initializePlayer(pid);
+          this.shuffleArray(this.currentPlaylist, false);
+          this.loadSong();
+          this.togglePlay();
+        }catch (error){
+          console.error('randomPlay錯誤: ', error);
+        }
+      }
   },
   watch: {
     /*
@@ -339,15 +365,26 @@ export default {
       eventBus.emit('receiveCurrentSong', this.currentSong);
     });
     eventBus.on('requestIsPlaying', () => {
-      console.log('送出isPlaying: ', this.isPlaying);
+      // console.log('送出isPlaying: ', this.isPlaying);
       eventBus.emit('receiveIsPlaying', (this.isPlaying));
     });
     eventBus.on('togglePlay', this.togglePlay);
+    eventBus.on('initializePlayer', (pid) => {
+      console.log('從頭播放Playlist');
+      this.playInOrder(pid);
+    });
+    eventBus.on('shuffle', (pid) => {
+      console.log('隨機播放Playlist');
+      this.randomPlay(pid);
+    });
   },
   beforeUnmount() {
     cancelAnimationFrame(this.rafId);
     eventBus.off('play-song', this.reload);
     eventBus.off('requestCurrentSong');
+    eventBus.off('togglePlay', this.togglePlay);
+    eventBus.off('initializePlayer');
+    eventBus.off('shuffle');
   },
 }
 </script>

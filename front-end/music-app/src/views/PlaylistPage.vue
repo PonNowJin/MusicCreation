@@ -13,8 +13,8 @@
           <h2 class="playlist-title">{{ playlist.title }}</h2>
           <p class="playlist-artist">{{ playlist.artist }}</p>
           <div class="playlist-buttons">
-            <button class="play-btn">播放</button>
-            <button class="shuffle-btn">隨機播放</button>
+            <button class="play-btn" @click="togglePlayFirst">播放</button>
+            <button class="shuffle-btn" @click="toggleShuffle">隨機播放</button>
           </div>
         </div>
       </div>
@@ -189,6 +189,18 @@
             eventBus.emit('requestIsPlaying');
         }
       },
+      togglePlayFirst() {
+        // 從頭播放Playlist
+        const pid = this.$route.params.pid;
+        eventBus.emit('initializePlayer', {pid});
+        this.isPlaying = true;
+      },
+      toggleShuffle() {
+        // 隨機播放
+        const pid = this.$route.params.pid;
+        eventBus.emit('shuffle', {pid});
+        this.isPlaying = true;
+      }
     }
   };
   </script>
