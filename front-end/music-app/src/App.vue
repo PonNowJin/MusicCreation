@@ -14,7 +14,7 @@
 
         <!-- 側邊導航按鈕 -->
         <ul class="nav-items">
-          <li @click="$router.push('/home')" :class="{ 'active-link': $route.path === '/home' }">
+          <li @click="$router.push('/creating-song')" :class="{ 'active-link': $route.path === '/home' }">
             <span class="nav-text">創作</span>
           </li>
           <li @click="$router.push('/all-playlists')" :class="{ 'active-link': $route.path === '/all-playlists' }">

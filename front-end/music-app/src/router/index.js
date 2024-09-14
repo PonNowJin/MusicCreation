@@ -2,16 +2,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PlaylistPage from '@/views/PlaylistPage.vue';
 import PlaylistGrid from '@/views/PlaylistGrid.vue' // 所有播放列表頁面
 import NotFoundPage from '@/views/NotFoundPage.vue'  // 404 頁面
+import SongCreationPage from '@/views/SongCreationPage.vue' // 創作歌曲頁面
 
 // 定義路由對應的頁面
 const routes = [
-  /*
   {
-    path: '/playlist/:id',
-    name: 'Playlist',
-    component: PlaylistPage,
+    path: '/creating-song',
+    name: 'Create',
+    component: SongCreationPage,
   },
-  */
   {
     path: '/all-playlists',
     name: 'AllPlaylist',
