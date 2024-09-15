@@ -29,13 +29,12 @@
       <!-- 輸入框 -->
       <div class="input-container">
         <div class="chat-input">
-          <i class="attachment-icon"></i>
+          <i class="attachment-icon" @click="triggerFileInput"></i>
           <input
             v-model="message"
             type="text"
             placeholder="在想什麼？"
             class="input-field"
-            @keydown.enter="sendMessage"
           />
           <button class="send-button" @click="sendMessage">
             <img src="@/assets/send-icon.png" alt="Send Icon" class="send-icon">
@@ -43,15 +42,23 @@
         </div>
       </div>
   
-      <!-- 顯示訊息內容 -->
-      <div v-if="sentMessage" class="message-container">
-        <p>傳送的訊息: {{ sentMessage }}</p>
-      </div>
-    </div>
-  </template>
+
+    <!-- 檔案上傳 (隱藏的 input) -->
+    <input
+        ref="fileInput"
+        type="file"
+        @change="handleFileUpload"
+        style="display: none;"
+        accept=".txt,.mp3,.jpg,.png"
+    />
+
+</div>
+</template>
   
   
   <script>
+  import axios from 'axios';
+
   export default {
   name: 'SongCreationPage',
   data() {
@@ -59,31 +66,72 @@
       message: '', // 綁定輸入框的內容
       sentMessage: '', // 儲存已送出的訊息
       coverImage: require('@/assets/what_on_your_mind.png'), // 封面圖檔路徑
+      
+      // 檔案上傳
+      uploadedFile: null, 
+      uploadedFileName: '', 
+
       // 用於控制文字顯示的狀態
       showLeftTop: false,
       showLeftBottom: false,
       showRightTop: false,
       showRightBottom: false,
+
+      pollingInterval: null, // 用於控制輪詢的計時器
     };
+  },
+  computed: {
+
   },
   mounted() {
     // 頁面加載後依序顯示提示文字
     this.showTextsInOrder();
   },
   methods: {
-    sendMessage() {
-      if (this.message.trim()) {
-        this.sentMessage = this.message; // 將輸入框的內容儲存到變數
-        this.message = ''; // 清空輸入框
-      }
-    },
+
     showTextsInOrder() {
       // 依序顯示文字的時間控制
       setTimeout(() => { this.showLeftTop = true; }, 500);   // 左上
       setTimeout(() => { this.showRightBottom = true; }, 2000); // 右下
       setTimeout(() => { this.showRightTop = true; }, 1000);  // 右上
       setTimeout(() => { this.showLeftBottom = true; }, 1500); // 左下
-    }
+    },
+    triggerFileInput() {
+        this.$refs.fileInput.click();
+    },
+    handleFileUpload(event) {
+        const file = event.file.target[0];
+        if (file) {
+            this.uploadedFile = file;
+            this.uploadedFileName = file.name;
+        }
+    },
+    async sendMessage() {
+        if (this.message.trim() || this.uploadedFile) {
+            this.sentMessage = this.message;
+        }
+        // 將訊息和檔案封裝成 FormData 發送到後端
+        const formData = new FormData();
+        formData.append('message', this.message);
+        if (this.uploadedFile) {
+            formData.append('file', this.uploadedFile);
+        }
+        try {
+            const response = await axios.post('http://127.0.0.1:5000/SongCreation', formData);
+
+            if (response.data.message === 'is creating') {
+                alert('正在創作歌曲中，請稍候...');
+            } else {
+                this.message = ''; // 清空輸入框
+                this.uploadedFile = null; // 清除上傳的檔案
+                this.uploadedFileName = ''; // 清除檔案名稱
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        formData.delete('message');
+        formData.delete('file');
+    },
   }
 };
 

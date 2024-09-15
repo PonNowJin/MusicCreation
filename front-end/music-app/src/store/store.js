@@ -1,10 +1,21 @@
+import Vuex from 'vuex';
+
+
 export default new Vuex.Store({
   state: {
-    currentSong: null, // 存放當前播放的歌曲
+    isSongCreating: false, // Track the song creation process
   },
   mutations: {
-    setCurrentSong(state, song) {
-      state.currentSong = song;
+    setIsSongCreating(state, status) {
+      state.isSongCreating = status;
     },
+  },
+  actions: {
+    updateIsSongCreating({ commit }, status) {
+      commit('setIsSongCreating', status);
+    },
+  },
+  getters: {
+    getIsSongCreating: (state) => state.isSongCreating,
   },
 });

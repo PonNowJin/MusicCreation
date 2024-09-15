@@ -46,6 +46,10 @@ cd back-end
 ```bash
 pip install Flask
 ```
+```bash
+pip install flask-socketio
+```
+
 #### 執行：
 ```bash
 python3 app.py

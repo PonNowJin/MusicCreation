@@ -2,25 +2,53 @@ import os
 import mutagen
 import base64
 import sys
+import threading
 from flask import Flask, jsonify, request, redirect, send_file
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from flask import send_from_directory
 from mutagen.id3 import APIC
 from flask_cors import cross_origin
+from celery import Celery
+from celery.result import AsyncResult
+from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 load_dotenv()
 ROOT_DIR = os.getenv('ROOT_DIR')
 sys.path.append(ROOT_DIR)
 from connect import * 
+from SongCreation.SongCreation import SongCreation
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 # CORS(app)
-# CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
+# CORS(app, resources={r"/*": {"origins": "*"}})
 
 MUSIC_FOLDER = os.getenv("LYRIC_AND_STYLE_OUTPUT_PATH")
 
 connection = connect_to_db()
+now_creating = False
+
+'''
+# 初始化 Celery (用於異步處理)
+# celery = Celery('tasks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
+# celery = Celery('tasks', broker='pyamqp://guest@localhost//', backend='rpc://')
+# celery = Celery('tasks', broker='amqp://guest@localhost:4369//')
+celery = Celery('tasks', broker='pyamqp://guest@localhost//')
+
+@celery.task(name="tasks.SongCreationTask")
+def SongCreationTask(message):
+    success = SongCreation(message)
+    return success
+'''
+
+
+# 設定檔案上傳路徑
+UPLOAD_FOLDER = './uploads'  # 自訂資料夾來存儲上傳的檔案
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER):
     songs = []
@@ -245,7 +273,44 @@ def getIndexFromPlaylist(pid, sid):
     return jsonify({'error': 'Not found'})
 
 
+def song_creation_task(message):
+    global now_creating
+    print(f"Creating song with message: {message}")
+    now_creating = True
+    success = SongCreation(message, 1)
+    # 創建完成後通知前端
+    socketio.emit('song_creation_complete', {'success': success})
+    now_creating = False
 
+# call SongCreation 創作歌曲
+@app.route('/SongCreation', methods=['POST'])
+def CreatingSong():
+    global now_creating
+    try:
+        # 獲取資料、存檔
+        message = request.form.get('message', '')
+        uploaded_file = request.files.get('file')
+        
+        if uploaded_file:
+            filename = secure_filename(uploaded_file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            uploaded_file.save(file_path)
+            
+        # 製作歌曲
+        if not now_creating:
+            task_thread = threading.Thread(target=song_creation_task, args=(message,))
+            task_thread.start()
+            return jsonify({'message': 'Song creation started'}), 200
+        
+        else:
+            return jsonify({'message': 'is creating'}), 200
+        
+
+    
+    except Exception as e:
+        print('err: ', e)
+        return jsonify({'error': str(e)}), 500
+        
 
 if __name__ == '__main__':
-    app.run(debug=True)  
+    socketio.run(app, debug=True)

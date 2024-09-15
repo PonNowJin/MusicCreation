@@ -74,6 +74,7 @@ class Prompt_OPT:
         self.prompt_content[-2] += self.input_prompt
         print(self.prompt_content[-2])
         response = self.model.generate_content(self.prompt_content)
+        self.prompt_content[-2] = "input: "
         print(response.text)
         return response.text
 

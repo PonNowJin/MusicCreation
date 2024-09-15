@@ -26,11 +26,11 @@ def load_lyrics(dir) -> dict:
 # 把歌詞做embedding
 # model_name = 'sentence-transformers/all-MiniLM-L6-v2'
 # model_name = 'sentence-transformers/paraphrase-mpnet-base-v2'
-model_name = 'intfloat/multilingual-e5-large'
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModel.from_pretrained(model_name)
 
 def embed_lyrics(lyrics):
+    model_name = 'intfloat/multilingual-e5-large'
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModel.from_pretrained(model_name)
     inputs = tokenizer(lyrics, return_tensors='pt', padding=True, truncation=True)
     with torch.no_grad():
         embeddings = model(**inputs).last_hidden_state.mean(dim=1)
