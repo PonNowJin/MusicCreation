@@ -45,46 +45,6 @@ export default {
   methods: {
     ...mapActions(['updateIsSongCreating']),
   },
-  /*
-  mounted() {
-
-    // 初始化 WebSocket 連接
-    this.socket = new WebSocket('ws://127.0.0.1:5000/');
-
-
-    // 當 WebSocket 連接打開時
-    this.socket.onopen = () => {
-      console.log('WebSocket connection established');
-    };
-
-    // 當接收到消息時
-    this.socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('Received message from server:', data);
-      
-      if (data.type === 'song_creation_complete') {
-        alert(`Song creation complete: ${data.success}`);
-        this.updateIsSongCreating(false);
-      }
-    };
-
-    // 當 WebSocket 連接關閉時
-    this.socket.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
-    // 當 WebSocket 發生錯誤時
-    this.socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-  },
-  beforeUnmount() {
-    // 關閉 WebSocket 連接
-    if (this.socket) {
-      this.socket.close();
-    }
-  },
-  */
 };
 </script>
 

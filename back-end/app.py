@@ -279,7 +279,7 @@ def song_creation_task(message):
     now_creating = True
     success = SongCreation(message, 1)
     # 創建完成後通知前端
-    socketio.emit('song_creation_complete', {'success': success})
+    # socketio.emit('song_creation_complete', {'success': success})
     now_creating = False
 
 # call SongCreation 創作歌曲

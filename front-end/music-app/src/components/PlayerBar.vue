@@ -222,7 +222,9 @@ export default {
         this.playNext();
       } else {
         this.$refs.audio.currentTime = 0;
-        this.isPlaying = false;
+        if (this.isPlaying) {
+          this.togglePlay();
+        }
       }
     },
     updateVolume(event) {
@@ -244,11 +246,8 @@ export default {
             this.currentIndex = 0;
         }
       }
-      if (this.isPlaying) {
-        this.loadSong(true);
-      } else {
-        this.loadSong();
-      }
+
+      this.loadSong(this.isPlaying);
     },
     playPrevious() {
         if (this.currentIndex>0 && this.repeat!=2) {
@@ -374,6 +373,7 @@ export default {
 
   },
   mounted() {   // 加入播放列表
+    console.log('在PlayerBar的mounted中')
     this.initializePlayer(0);
     this.animateProgressBar();
     eventBus.on('play-song', this.reload); // 監聽 play-song 事件(指定播放歌曲)

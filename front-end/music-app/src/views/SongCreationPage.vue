@@ -125,6 +125,7 @@
                 this.message = ''; // 清空輸入框
                 this.uploadedFile = null; // 清除上傳的檔案
                 this.uploadedFileName = ''; // 清除檔案名稱
+                alert('準備為您創作歌曲');
             }
         } catch (error) {
             console.error(error);
