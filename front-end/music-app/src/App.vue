@@ -22,12 +22,21 @@
           </li>
         </ul>
       </aside>
-      <div class="main-content">
+      <div class="main-content" :class="{ 'lyric-visible': showLyric }">
         <!-- 主要內容區域 -->
-        <main class="content">
-          <router-view />
+        <transition name="slide">
+          <main class="content">
+            <router-view />
+          </main>
+        </transition>
 
-        </main>
+        <!-- 歌詞區域 -->
+        <transition name="slide">
+          <div class="lyric" :class="{ 'lyric-hidden': !showLyric }" >
+            <h2>歌詞顯示</h2>
+            <p>這裡會顯示當前播放歌曲的歌詞</p>
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -35,12 +44,15 @@
 
 <script>
 import PlayerBar from '@/components/PlayerBar.vue';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'App',
   components: {
     PlayerBar,
+  },
+  computed: {
+    ...mapState(['showLyric']),
   },
   methods: {
     ...mapActions(['updateIsSongCreating']),
@@ -70,6 +82,42 @@ export default {
   height: calc(100vh - 70px); /* 減去播放列的高度 */
   width: calc(100% - 13%); /* 剩下的空間 */
   overflow-y: auto; /* 讓內容區域具備上下滾動功能 */
+  display: flex;
+  transition: all 0.5s ease-in-out; /* 寬度動畫過度 */
+}
+
+.lyric {
+  width: 0%;
+  height: 100%;
+  min-width: 150px;
+  background-color: #f9f9f9;
+  padding: 10px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: width 0.5s ease-in-out, height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.lyric-visible .main-content {
+  width: calc(100% - 33%); /* 歌词显示时，main-content宽度减少 */
+  transition: all 0.3s ease-in-out;
+}
+
+.lyric-visible .content{
+  width: calc(100% - 33%); /*歌詞顯示時，main-content寬度減少 */
+  transition: all 0.3s ease-in-out;
+}
+
+.lyric-visible .lyric {
+  width: 20%; /* 歌詞區域佔據剩下的20% */
+  transition: all 0.3s ease-in-out;
+  opacity: 1; /* 顯示時設置透明度 */
+}
+
+.lyric-hidden {
+  width: 0; /* 收起時設置寬度為0 */
+  padding: 0; /* 收起時設置內邊距為0 */
+  height: 0;
+  overflow: hidden; /* 隱藏內容 */
+  opacity: 0; /* 隱藏時設置透明度 */
 }
 
 .sidebar {
@@ -90,6 +138,21 @@ export default {
   padding: 20px;
   overflow-y: auto;
   height: calc(100vh - 70px); /* 減去播放列的高度 */
+  transition: width 0.5s ease-in-out;
+}
+
+.slide-enter-active, .slide-leave-active {
+  transition: all 0.5s ease-in-out;
+}
+
+.slide-enter, .slide-leave-to {
+  transform: translateX(100%); /* 進入前或離開後位置 */
+  width: 0%; /* 在退出過程中寬度漸漸變小 */
+}
+
+.slide-enter-to, .slide-leave {
+  transform: translateX(0);
+  width: 20%; /* 歌詞顯示時的寬度 */
 }
 
 .navbar {

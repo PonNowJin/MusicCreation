@@ -106,8 +106,8 @@ def SongCreation(topic:str, CREATE_SONG=1) -> bool:
         return False
         
 
-'''
+
 if __name__ == '__main__':
-    topic = '你是我最愚蠢的一次浪漫'
+    topic = '旅行的意義，輕快地訴說戀人分離後的心境'
     SongCreation(topic, 1)
-'''
+

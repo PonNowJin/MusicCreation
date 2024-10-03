@@ -42,6 +42,9 @@
             </button>
             <input type="range" class="volume-bar" v-model="volume" min="0" max="100" @input="updateVolume" />
           </div>
+          <button class="lyric-button" @click="toggleShowLyric">
+              <img src="@/assets/lyric.png" alt="play/pause">
+          </button>
   
         </div>
         <!-- 音訊元素 -->
@@ -52,6 +55,7 @@
 <script>
 import axios from 'axios';
 import eventBus from '@/eventBus';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'PlayerBar',
@@ -71,6 +75,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['showLyric']),
     currentSong() {
       return this.currentPlaylist[this.currentIndex] || {
         sid: 0,
@@ -112,6 +117,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['updateShowLyric']),
     loadSong(autoPlay=false) {
       // 暫停當前播放的歌曲
       if (this.isPlaying) {
@@ -350,7 +356,11 @@ export default {
         }catch (error){
           console.error('randomPlay錯誤: ', error);
         }
-      }
+      },
+      toggleShowLyric() {
+        this.updateShowLyric(!this.showLyric);
+
+      },
   },
   watch: {
     /*
@@ -627,6 +637,25 @@ export default {
 .volume-container img{
   width: 100%;
   height: 100%;
+}
+
+.lyric-button {
+  width: 35px;
+  height: 25px;
+  padding: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px;
+  background-color: #ffffff;
+  cursor: pointer;
+  margin-left: 70px;
+}
+
+.lyric-button img{
+  width: 100%;
+  height: 100%;
+  padding: 0px;
 }
 
 

@@ -194,7 +194,7 @@ def getPlaylistInfo(pid):
         data = cursor.fetchall()
         '''
         data = find_playlist(pid)
-        print(data)
+        # print(data)
         
         songs = []
         for d in data:

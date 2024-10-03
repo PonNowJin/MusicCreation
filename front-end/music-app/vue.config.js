@@ -4,7 +4,7 @@ module.exports = defineConfig({
   publicPath: '/',
   devServer: {
     proxy: 'http://127.0.0.1:5000/',
-    hot: false,
-    liveReload: false
+    hot: true,
+    liveReload: true
   }
 })
