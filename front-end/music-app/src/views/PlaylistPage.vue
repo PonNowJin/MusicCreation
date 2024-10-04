@@ -210,7 +210,7 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-  width: 75vw; /* 固定為視窗寬度 */
+  width: 100%; /* 固定為視窗寬度 */
   overflow-x: hidden; /* 防止左右滾動 */
 }
 
@@ -294,9 +294,10 @@
 .playlist-songs table {
   width: 100%; /* 表格佔滿整個寬度 */
   border-collapse: collapse;
-  table-layout: fixed; /* 強制固定表格欄位寬度 */
+  table-layout: fixed;
   overflow-y: auto;
 }
+
 
 .playlist-songs th:first-child,
 .playlist-songs td:first-child {
@@ -307,6 +308,7 @@
 .playlist-songs td:not(:first-child) {
   width: auto; /* 其他列自動均分剩餘寬度 */
 }
+
 
 .playlist-songs tbody tr{
   position: relative;
@@ -334,6 +336,7 @@
   border-bottom: 1px solid #ddd;
   overflow: hidden; /* 防止文本溢出 */
   text-overflow: ellipsis; /* 讓文本溢出的時候顯示省略號 */
+  white-space: nowrap; /* 禁止自動換行 */
 }
 
 .playlist-songs tbody tr:hover .play-icon {
@@ -366,10 +369,6 @@
 
 .cover:hover .play-icon {
   visibility: visible;
-}
-
-.playlist-songs th {
-  width: 20%; /* 平均分配欄位寬度 */
 }
 
 /* 封面圖 */

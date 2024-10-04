@@ -117,7 +117,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateShowLyric']),
+    ...mapActions(['updateShowLyric', 'updateCurrentLyric', ]),
     loadSong(autoPlay=false) {
       // 暫停當前播放的歌曲
       if (this.isPlaying) {
@@ -127,6 +127,7 @@ export default {
       this.$refs.audio.src = "";
       this.$refs.audio.src = require(`@/assets/Output/${this.currentSong.sid}.mp3`)
       this.$refs.audio.load(); 
+      this.fetchLyrics(this.currentSong.sid);
 
       this.$refs.audio.currentTime = 0;
       
@@ -359,7 +360,20 @@ export default {
       },
       toggleShowLyric() {
         this.updateShowLyric(!this.showLyric);
-
+      },
+      async fetchLyrics(sid) {
+        if (!sid) return; // 如果 SID 無效，則不進行請求
+        try {
+          const response = await axios.get(`http://127.0.0.1:5000/GetLyric/${sid}`);
+          if (response.data && response.data.length > 0) {
+            this.updateCurrentLyric(response.data);
+          } else {
+            this.updateCurrentLyric('暫無歌詞');
+          }
+        } catch (error) {
+          console.error('抓取歌詞失敗:', error);
+          this.updateCurrentLyric('無法取得歌詞');
+        }
       },
   },
   watch: {

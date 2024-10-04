@@ -33,8 +33,7 @@
         <!-- 歌詞區域 -->
         <transition name="slide">
           <div class="lyric" :class="{ 'lyric-hidden': !showLyric }" >
-            <h2>歌詞顯示</h2>
-            <p>這裡會顯示當前播放歌曲的歌詞</p>
+            <p v-html="currentLyric"></p>
           </div>
         </transition>
       </div>
@@ -52,7 +51,7 @@ export default {
     PlayerBar,
   },
   computed: {
-    ...mapState(['showLyric']),
+    ...mapState(['showLyric', 'currentLyric']),
   },
   methods: {
     ...mapActions(['updateIsSongCreating']),
@@ -72,6 +71,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow-y: hidden;
 }
 
 .main-content {
@@ -79,8 +79,8 @@ export default {
   margin-left: 15%; /* 留出側邊欄的空間 */
   margin-top: 2%;
   padding: 20px;
-  height: calc(100vh - 70px); /* 減去播放列的高度 */
-  width: calc(100% - 13%); /* 剩下的空間 */
+  height: calc(100vh - 100px); /* 減去播放列的高度 */
+  width: calc(100% - 10%); /* 剩下的空間 */
   overflow-y: auto; /* 讓內容區域具備上下滾動功能 */
   display: flex;
   transition: all 0.5s ease-in-out; /* 寬度動畫過度 */
@@ -93,21 +93,27 @@ export default {
   background-color: #f9f9f9;
   padding: 10px;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-left: 1px solid #ccc; /* 添加底部邊線 */
   transition: width 0.5s ease-in-out, height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+
+  /* 確保換行 */
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
 }
 
 .lyric-visible .main-content {
-  width: calc(100% - 33%); /* 歌词显示时，main-content宽度减少 */
   transition: all 0.3s ease-in-out;
 }
 
 .lyric-visible .content{
-  width: calc(100% - 33%); /*歌詞顯示時，main-content寬度減少 */
+  width: calc(100% - 38%); /*歌詞顯示時，main-content寬度減少 */
   transition: all 0.3s ease-in-out;
 }
 
 .lyric-visible .lyric {
-  width: 20%; /* 歌詞區域佔據剩下的20% */
+  width: 25%; /* 歌詞區域佔據剩下的20% */
   transition: all 0.3s ease-in-out;
   opacity: 1; /* 顯示時設置透明度 */
 }
@@ -118,6 +124,12 @@ export default {
   height: 0;
   overflow: hidden; /* 隱藏內容 */
   opacity: 0; /* 隱藏時設置透明度 */
+}
+
+.lyric p {
+  white-space: pre-wrap; /* 保持歌詞中的換行 */
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .sidebar {
@@ -137,7 +149,7 @@ export default {
   flex-grow: 1;
   padding: 20px;
   overflow-y: auto;
-  height: calc(100vh - 70px); /* 減去播放列的高度 */
+  height: calc(100vh - 100px); /* 減去播放列的高度 */
   transition: width 0.5s ease-in-out;
 }
 
@@ -238,6 +250,9 @@ export default {
 
 
 html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
 }
 

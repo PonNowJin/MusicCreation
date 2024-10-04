@@ -304,13 +304,29 @@ def CreatingSong():
         
         else:
             return jsonify({'message': 'is creating'}), 200
-        
-
     
     except Exception as e:
         print('err: ', e)
         return jsonify({'error': str(e)}), 500
-        
+    
+    
+# 抓歌詞
+@app.route('/GetLyric/<sid>', methods=['GET'])
+def GetLyric(sid):
+    try:
+        connection = connect_to_db()
+        with connection.cursor() as cursor:
+            sql = 'SELECT lyrics FROM Songs WHERE sid = %s'
+            cursor.execute(sql, (sid, ))
+            lyric = cursor.fetchall()
+                
+    except pymysql.err.InterfaceError as e:
+        print(f"資料庫連接出現問題: {e}")
+        # 重新連接資料庫，或回傳錯誤訊息
+        return jsonify({"error": "Database connection error"}), 500
+    
+    return jsonify(lyric)
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
