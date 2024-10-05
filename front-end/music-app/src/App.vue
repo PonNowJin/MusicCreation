@@ -22,7 +22,7 @@
           </li>
         </ul>
       </aside>
-      <div class="main-content" :class="{ 'lyric-visible': showLyric }">
+      <div class="main-content" :class="{ 'lyric-visible': showLyric||showPlaylist }">
         <!-- 主要內容區域 -->
         <transition name="slide">
           <main class="content">
@@ -32,8 +32,25 @@
 
         <!-- 歌詞區域 -->
         <transition name="slide">
-          <div class="lyric" :class="{ 'lyric-hidden': !showLyric }" >
-            <p v-html="currentLyric"></p>
+          <div class="lyric" :class="{ 'lyric-hidden': !showLyric && !showPlaylist }">
+            <!-- 歌詞區塊 -->
+            <div v-if="showLyric">
+              <p v-html="currentLyric"></p>
+            </div>
+            <!-- 待播清單區塊 -->
+            <div v-if="showPlaylist">
+              <h3>待播清單 <span @click="clearPlaylist" class="clear">清除</span></h3>
+              <ul>
+                <li v-for="(song, index) in playlist.slice(currentIndex+1)" :key="song.sid" class="playlist-item">
+                  <img :src="require(`@/assets/Output/img_${song.sid}.png`)" alt="song cover" class="cover">
+                  <div class="song-info">
+                    <p class="title">{{ song.title }}</p>
+                    <p class="artist">{{ song.artist }}</p>
+                  </div>
+                  <span class="duration">{{ formatTime(song.duration) }}</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </transition>
       </div>
@@ -51,10 +68,20 @@ export default {
     PlayerBar,
   },
   computed: {
-    ...mapState(['showLyric', 'currentLyric']),
+    ...mapState(['showLyric', 'currentLyric', 'showPlaylist', 'playlist', 'currentIndex', ]),
   },
   methods: {
-    ...mapActions(['updateIsSongCreating']),
+    ...mapActions(['updateIsSongCreating', 'updatePlaylist', 'updateCurrentIndex', ]),
+    formatTime(seconds) {
+      // 使用 Math.floor 處理秒數，避免顯示小數位數
+      const minutes = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${String(minutes).padStart(1, '0')}:${String(secs).padStart(2, '0')}`;
+    },
+    clearPlaylist() {
+      const newPlaylist = this.playlist.slice(0, this.currentIndex + 1); // 保留 currentIndex 及其之前的歌曲
+      this.updatePlaylist(newPlaylist);
+    },
   },
 };
 </script>
@@ -108,12 +135,12 @@ export default {
 }
 
 .lyric-visible .content{
-  width: calc(100% - 38%); /*歌詞顯示時，main-content寬度減少 */
+  width: calc(100% - 41%); /*歌詞顯示時，main-content寬度減少 */
   transition: all 0.3s ease-in-out;
 }
 
 .lyric-visible .lyric {
-  width: 25%; /* 歌詞區域佔據剩下的20% */
+  width: 28%; /* 歌詞區域佔據剩下的20% */
   transition: all 0.3s ease-in-out;
   opacity: 1; /* 顯示時設置透明度 */
 }
@@ -166,6 +193,63 @@ export default {
   transform: translateX(0);
   width: 20%; /* 歌詞顯示時的寬度 */
 }
+
+.playlist-item {
+  display: flex;
+  align-items: center;   /* 垂直置中 */
+  justify-content: flex-start;  /* 水平靠左 */
+  padding: 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.cover {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.song-info {
+  flex: 1;
+  justify-content: center; /* 確保上下居中對齊 */
+}
+
+.title, .artist {
+  margin: 0; /* 取消預設的 margin */
+  padding: 0; /* 取消預設的 padding */
+}
+
+.title {
+  margin-bottom: 2px; /* 自訂一個更小的間距，讓 title 和 artist 之間的距離減少 */
+}
+
+.artist {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.duration {
+  font-size: 0.9em;
+  color: #999;
+}
+
+.clear {
+  color: red;
+  cursor: pointer;
+  margin-left: 10px;
+  font-weight: normal;
+}
+
+ul {
+  padding-left: 0;  /* 移除內縮 */
+  margin-left: 0;   /* 移除內縮 */
+}
+
+li {
+  list-style: none; /* 移除列表符號（如果有） */
+}
+
 
 .navbar {
   display: flex;

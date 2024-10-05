@@ -43,7 +43,10 @@
             <input type="range" class="volume-bar" v-model="volume" min="0" max="100" @input="updateVolume" />
           </div>
           <button class="lyric-button" @click="toggleShowLyric">
-              <img src="@/assets/lyric.png" alt="play/pause">
+              <img src="@/assets/lyric.png" alt="lyric">
+          </button>
+          <button class="playlist-button" @click="togglePlaylist">
+              <img src="@/assets/playlist-gray-icon.png" alt="playlist">
           </button>
   
         </div>
@@ -66,18 +69,16 @@ export default {
       progress: 0, // 音樂進度
       volume: 50, // 音量
       isPlaying: false,
-      currentPlaylist: [],
       duration: 0,
-      currentIndex: 0,
       currentTime: 0,
       rafId: null, // 保存 requestAnimationFrame ID
       pid: 0,
     };
   },
   computed: {
-    ...mapState(['showLyric']),
+    ...mapState(['showLyric', 'showPlaylist', 'playlist', 'currentIndex', ]),
     currentSong() {
-      return this.currentPlaylist[this.currentIndex] || {
+      return this.playlist[this.currentIndex] || {
         sid: 0,
         cover: require('@/assets/song-cover.jpg'),
         title: '為你寫詩',
@@ -117,7 +118,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateShowLyric', 'updateCurrentLyric', ]),
+    ...mapActions(['updateShowLyric', 'updateCurrentLyric', 'updateShowPlaylist', 'updatePlaylist', 'updateCurrentIndex', ]),
     loadSong(autoPlay=false) {
       // 暫停當前播放的歌曲
       if (this.isPlaying) {
@@ -177,15 +178,17 @@ export default {
     async toggleShuffle() {
       this.isShuffle = !this.isShuffle; // 切換隨機播放狀態
       if (this.isShuffle) {
-        [this.currentPlaylist[0], this.currentPlaylist[this.currentIndex]] = [this.currentPlaylist[this.currentIndex], this.currentPlaylist[0]];
-        this.currentIndex = 0;
-        this.shuffleArray(this.currentPlaylist, true); // 隨機排列播放列表
+        const shuffledPlaylist = [...this.playlist];
+        [shuffledPlaylist[0], shuffledPlaylist[this.currentIndex]] = [shuffledPlaylist[this.currentIndex], shuffledPlaylist[0]];
+        this.updateCurrentIndex(0);
+        this.shuffleArray(shuffledPlaylist, true); // 隨機排列播放列表
+        this.updatePlaylist(shuffledPlaylist);
       } else {
-        const old_sid = this.currentPlaylist[this.currentIndex].sid;
+        const old_sid = this.playlist[this.currentIndex].sid;
         await this.fetchPlaylist(this.pid); // 重置播放列表為原始順序
-        for (let i=0; i<this.currentPlaylist.length; i++) {
-          if (this.currentPlaylist[i].sid == old_sid) {
-            this.currentIndex = i;
+        for (let i=0; i<this.playlist.length; i++) {
+          if (this.playlist[i].sid == old_sid) {
+            this.updateCurrentIndex(i);
             break;
           }
         }
@@ -241,16 +244,16 @@ export default {
       document.documentElement.style.setProperty('--volume', `${this.volume}%`);
     },
     playNext() {
-      if (this.currentIndex < this.currentPlaylist.length - 1) {
-        this.currentIndex += 1;
+      if (this.currentIndex < this.playlist.length - 1) {
+        this.updateCurrentIndex(this.currentIndex+1);
       } 
       else {
         if (this.repeat==0) {
-            this.currentIndex = 0;
+            this.updateCurrentIndex(0);
             return;
         }
         else {
-            this.currentIndex = 0;
+            this.updateCurrentIndex(0);
         }
       }
 
@@ -258,7 +261,7 @@ export default {
     },
     playPrevious() {
         if (this.currentIndex>0 && this.repeat!=2) {
-            this.currentIndex -= 1;
+            this.updateCurrentIndex(this.currentIndex - 1);
         }
         else if (this.currentIndex>0 && this.repeat==2) {
             // 播放同一首
@@ -269,7 +272,7 @@ export default {
             }
             else {
                 // repeat==1: 播放最後一首
-                this.currentIndex = this.currentPlaylist.length - 1;
+                this.updateCurrentIndex(this.playlist.length - 1);
             }
         }
         if (this.isPlaying) {
@@ -290,14 +293,14 @@ export default {
     async fetchPlaylist(pid) {
       try {
         const response = await axios.get(`http://127.0.0.1:5000/playlist?pid=${pid}`);
-        this.currentPlaylist = response.data;
-        console.log(this.currentPlaylist)
+        this.updatePlaylist(response.data);
+        console.log(this.playlist)
       } catch (error) {
         console.error('獲取播放列表錯誤: ', error);
       }
     },
     async initializePlayer(pid) {
-      this.currentIndex = 0;
+      this.updateCurrentIndex(0);
       try {
         await this.fetchPlaylist(pid);
         this.loadSong();
@@ -322,7 +325,7 @@ export default {
         } else {
           const index = data.index;
           console.log('歌曲索引:', index);
-          this.currentIndex = index;
+          this.updateCurrentIndex(index);
           if (this.isShuffle) {
             this.isShuffle = false; // 由於toggleShuffle 表示按下隨機，因此這邊先將其設為false
             this.toggleShuffle();
@@ -351,7 +354,7 @@ export default {
         }
         try {
           await this.initializePlayer(pid);
-          this.shuffleArray(this.currentPlaylist, false);
+          this.shuffleArray(this.playlist, false);
           this.loadSong();
           this.togglePlay();
         }catch (error){
@@ -359,7 +362,16 @@ export default {
         }
       },
       toggleShowLyric() {
+        if (this.showPlaylist) {
+          this.updateShowPlaylist(false);
+        }
         this.updateShowLyric(!this.showLyric);
+      },
+      togglePlaylist() {
+        if (this.showLyric) {
+          this.updateShowLyric(false);
+        }
+        this.updateShowPlaylist(!this.showPlaylist);
       },
       async fetchLyrics(sid) {
         if (!sid) return; // 如果 SID 無效，則不進行請求
@@ -394,6 +406,9 @@ export default {
     repeat(newIndex) {
       console.log('repeat: ', newIndex);
     },
+    showPlaylist(newIndex) {
+      console.log('showPlaylist: ', newIndex);
+    }
 
   },
   mounted() {   // 加入播放列表
@@ -663,7 +678,7 @@ export default {
   border: 1px;
   background-color: #ffffff;
   cursor: pointer;
-  margin-left: 70px;
+  margin-left: 60px;
 }
 
 .lyric-button img{
@@ -672,6 +687,24 @@ export default {
   padding: 0px;
 }
 
+.playlist-button {
+  width: 30px;
+  height: 15px;
+  padding: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px;
+  background-color: #ffffff;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.playlist-button img{
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+}
 
 
   </style>
