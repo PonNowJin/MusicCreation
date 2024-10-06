@@ -318,14 +318,43 @@ def GetLyric(sid):
         with connection.cursor() as cursor:
             sql = 'SELECT lyrics FROM Songs WHERE sid = %s'
             cursor.execute(sql, (sid, ))
-            lyric = cursor.fetchall()
+            lyric = cursor.fetchone()[0]
+            if lyric:
+                # 將每個句子進行處理
+                formatted_lyric = ""
+                lines = lyric.split('\n')
+                for line in lines:
+                    new_line = ''
+                    # 將每行以 '，' 再次分割
+                    phrases = line.split('，')
+                    for phrase in phrases:
+                        if len(phrase) <= 7:
+                            new_line += phrase + " "  # 小於等於7個字，用空格分隔
+                        else:
+                            new_line += phrase + "\n"  # 大於7個字，用換行符號分隔
+
+                    # 移除最後的多餘空格並根據換行符分割
+                    sub_lines = new_line.rstrip().split('\n')  # 將處理過的行進行分段
+                    processed_line = ""
+
+                    # 處理每一分段，檢查是否超過13個字
+                    for sub_line in sub_lines:
+                        while len(sub_line) > 13:
+                            processed_line += sub_line[:13] + "\n"  # 每13個字後加換行
+                            sub_line = sub_line[13:]  # 處理剩餘的部分
+                        processed_line += sub_line + '\n' # 加入不超過13個字的段落
+
+                    formatted_lyric += processed_line + '\n'  # 累加到最終格式化的歌詞結果
+
+            else:
+                formatted_lyric = ''
                 
     except pymysql.err.InterfaceError as e:
         print(f"資料庫連接出現問題: {e}")
         # 重新連接資料庫，或回傳錯誤訊息
         return jsonify({"error": "Database connection error"}), 500
     
-    return jsonify(lyric)
+    return jsonify(formatted_lyric)
 
 
 if __name__ == '__main__':

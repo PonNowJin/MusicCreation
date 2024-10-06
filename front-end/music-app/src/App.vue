@@ -32,9 +32,9 @@
 
         <!-- 歌詞區域 -->
         <transition name="slide">
-          <div class="lyric" :class="{ 'lyric-hidden': !showLyric && !showPlaylist }">
+          <div class="lyric-container" :class="{ 'lyric-hidden': !showLyric && !showPlaylist }">
             <!-- 歌詞區塊 -->
-            <div v-if="showLyric">
+            <div v-if="showLyric" class="lyric">
               <p v-html="currentLyric"></p>
             </div>
             <!-- 待播清單區塊 -->
@@ -69,6 +69,7 @@ export default {
   },
   computed: {
     ...mapState(['showLyric', 'currentLyric', 'showPlaylist', 'playlist', 'currentIndex', ]),
+  
   },
   methods: {
     ...mapActions(['updateIsSongCreating', 'updatePlaylist', 'updateCurrentIndex', ]),
@@ -113,7 +114,7 @@ export default {
   transition: all 0.5s ease-in-out; /* 寬度動畫過度 */
 }
 
-.lyric {
+.lyric-container {
   width: 0%;
   height: 100%;
   min-width: 150px;
@@ -139,7 +140,7 @@ export default {
   transition: all 0.3s ease-in-out;
 }
 
-.lyric-visible .lyric {
+.lyric-visible .lyric-container {
   width: 28%; /* 歌詞區域佔據剩下的20% */
   transition: all 0.3s ease-in-out;
   opacity: 1; /* 顯示時設置透明度 */
@@ -155,7 +156,7 @@ export default {
 
 .lyric p {
   white-space: pre-wrap; /* 保持歌詞中的換行 */
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.5;
 }
 
@@ -213,15 +214,17 @@ export default {
 .song-info {
   flex: 1;
   justify-content: center; /* 確保上下居中對齊 */
+  font-size: 16px;
 }
 
 .title, .artist {
+  font-size: 16px;
   margin: 0; /* 取消預設的 margin */
   padding: 0; /* 取消預設的 padding */
 }
 
 .title {
-  margin-bottom: 2px; /* 自訂一個更小的間距，讓 title 和 artist 之間的距離減少 */
+  margin-bottom: 1px; /* 自訂一個更小的間距，讓 title 和 artist 之間的距離減少 */
 }
 
 .artist {
