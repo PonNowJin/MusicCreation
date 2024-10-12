@@ -100,6 +100,7 @@ export default {
   flex-direction: column;
   height: 100vh;
   overflow-y: hidden;
+  overflow-x: hidden;
 }
 
 .main-content {
@@ -108,8 +109,9 @@ export default {
   margin-top: 2%;
   padding: 20px;
   height: calc(100vh - 100px); /* 減去播放列的高度 */
-  width: calc(100% - 10%); /* 剩下的空間 */
+  width: 93%; /* 剩下的空間 */
   overflow-y: auto; /* 讓內容區域具備上下滾動功能 */
+  overflow-x: hidden;
   display: flex;
   transition: all 0.5s ease-in-out; /* 寬度動畫過度 */
 }
@@ -118,6 +120,7 @@ export default {
   width: 0%;
   height: 100%;
   min-width: 150px;
+  max-width: 385px;
   background-color: #f9f9f9;
   padding: 10px;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);

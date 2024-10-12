@@ -361,15 +361,17 @@ export default {
           console.error('randomPlay錯誤: ', error);
         }
       },
-      toggleShowLyric() {
+      async toggleShowLyric() {
         if (this.showPlaylist) {
           this.updateShowPlaylist(false);
+          await new Promise(resolve => setTimeout(resolve, 100)); // 延遲0.1秒
         }
         this.updateShowLyric(!this.showLyric);
       },
-      togglePlaylist() {
+      async togglePlaylist() {
         if (this.showLyric) {
           this.updateShowLyric(false);
+          await new Promise(resolve => setTimeout(resolve, 100)); // 延遲0.1秒
         }
         this.updateShowPlaylist(!this.showPlaylist);
       },

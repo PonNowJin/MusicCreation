@@ -206,11 +206,15 @@
   </script>
   
   <style scoped>
+#app {
+  overflow-x: hidden;
+}
+
 .playlist-container {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  width: 100%; /* 固定為視窗寬度 */
+  width: 93%; /* 固定為視窗寬度 */
   overflow-x: hidden; /* 防止左右滾動 */
 }
 
@@ -296,6 +300,7 @@
   border-collapse: collapse;
   table-layout: fixed;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 
