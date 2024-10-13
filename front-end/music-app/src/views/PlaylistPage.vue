@@ -74,10 +74,13 @@
                      @click.stop="playSong(song.sid)">
                      
                 <!-- 封面圖 -->
-                <img :src="require(`@/assets/Output/img_${song.sid}.png`)" 
-                     :alt="song.title" 
-                     class="song-cover">
-              </div>
+                <img 
+                    :src="imageSrc(song.sid)" 
+                    :alt="song.title" 
+                    @error="handleError" 
+                    class="song-cover"
+                />
+            </div>
             </td>
             <td>{{ song.title }}</td>
             <td>{{ song.artist }}</td>
@@ -103,6 +106,7 @@
         currentSong: null,
         isPlaying: false,
         hoveredSong: null,
+        defaultImage: require('@/assets/no-cover.png'), // 預設圖片
       };
     },
     mounted() {
@@ -143,6 +147,12 @@
         },
     },
     methods: {
+      imageSrc(sid) {
+        return require(`@/assets/Output/img_${sid}.png`);
+      },
+      handleError(event) {
+        event.target.src = this.defaultImage; // 如果圖片加載失敗，設置為預設圖片
+      },
       async fetchPlaylist() {
         const pid = this.$route.params.pid;
         try {

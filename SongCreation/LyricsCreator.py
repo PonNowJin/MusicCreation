@@ -29,9 +29,10 @@ class LyricsCreator_llm:
 
     music_style_prompt = """
         你將根據我給出的情感或主題生成歌曲風格。
+        
+        男歌者：male singer, 女歌手：female singer
 
         請務必遵守以下格式：
-
         格式：
         使用英語生成樂曲風格、使用樂器、節奏、人聲描述。必須簡短，且不超過120字。不要包含標題、歌詞或其他不必要的文字。
 

@@ -25,6 +25,8 @@ socketio = SocketIO(app)
 CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
 # CORS(app, resources={r"/*": {"origins": "*"}})
 
+socketio = SocketIO(app, cors_allowed_origins="*")  # 設定 CORS 允許所有來源
+
 MUSIC_FOLDER = os.getenv("LYRIC_AND_STYLE_OUTPUT_PATH")
 
 connection = connect_to_db()
@@ -279,7 +281,10 @@ def song_creation_task(message):
     now_creating = True
     success = SongCreation(message, 1)
     # 創建完成後通知前端
-    # socketio.emit('song_creation_complete', {'success': success})
+    if success:
+        socketio.emit('message', {'data': '歌曲創建成功！'})
+    else:
+        socketio.emit('message', {'data': '歌曲創建失敗...'})
     now_creating = False
 
 # call SongCreation 創作歌曲

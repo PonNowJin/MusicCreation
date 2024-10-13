@@ -1,7 +1,8 @@
 import Vuex from 'vuex';
-
+import createPersistedState from "vuex-persistedstate";
 
 export default new Vuex.Store({
+  plugins: [createPersistedState()],
   state: {
     isSongCreating: false, // Track the song creation process
     showLyric: false,

@@ -2,7 +2,9 @@
   <div class="container">
     <div id="app">
       <!-- 頂部播放列 -->
-      <PlayerBar/>
+      <keep-alive>
+        <PlayerBar/>
+      </keep-alive>
 
       <!-- 側邊導航欄 -->
       <aside class="sidebar">
@@ -41,7 +43,7 @@
             <div v-if="showPlaylist">
               <h3>待播清單 <span @click="clearPlaylist" class="clear">清除</span></h3>
               <ul>
-                <li v-for="(song, index) in playlist.slice(currentIndex+1)" :key="song.sid" class="playlist-item">
+                <li v-for="(song) in playlist.slice(currentIndex+1)" :key="song.sid" class="playlist-item">
                   <img :src="require(`@/assets/Output/img_${song.sid}.png`)" alt="song cover" class="cover">
                   <div class="song-info">
                     <p class="title">{{ song.title }}</p>
@@ -61,6 +63,7 @@
 <script>
 import PlayerBar from '@/components/PlayerBar.vue';
 import { mapActions, mapState } from 'vuex';
+import socket from "@/plugins/socket";
 
 export default {
   name: 'App',
@@ -83,6 +86,18 @@ export default {
       const newPlaylist = this.playlist.slice(0, this.currentIndex + 1); // 保留 currentIndex 及其之前的歌曲
       this.updatePlaylist(newPlaylist);
     },
+  },
+  created() {
+    // 監聽後端發送的 'message' 事件
+    socket.on('message', (data) => {
+      console.log("收到訊息：", data);
+      if (confirm(`${data.data}\n是否重新整理頁面？`)) {
+        location.reload();  // 按下 "確定" 後重新整理頁面
+      }
+    });
+  },
+  beforeUnmount() {
+    socket.off('message');
   },
 };
 </script>

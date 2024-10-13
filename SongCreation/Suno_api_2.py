@@ -93,29 +93,34 @@ def save_song(data, output_path=LYRIC_AND_STYLE_OUTPUT_PATH) -> int:
     input: data: {audio_url:url, img_url:url}, output_path
     output: sid: 存在資料庫的Songs.sid
     '''
-    start_time = time.time()
-    
-    response = rget(data['audio_url'], allow_redirects=False, stream=True)
-    if response.status_code != 200:
-        raise Exception("Could not download song")
-    
-    connection = connect_to_db()
-    if connection:
-        with connection.cursor() as cursor:
-            sid = generate_new_id(cursor, 0)
-    else:
-        print('err to connect database')
-    
-    path = os.path.join(output_path, f"{sid}.mp3")
-    with open(path, "wb") as output_file:
-        for chunk in response.iter_content(chunk_size=1024):
-            if chunk:
-                output_file.write(chunk)
-    
-    # song_url = upload_to_drive(path)
-    picture_url = download_image(data['img_url'], os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, f'img_{sid}.png'))
-    set_mp3_cover(data['img_url'], path)
-    store_to_database(sid, data['audio_url'], picture_url)
+    try:
+        start_time = time.time()
+        
+        response = rget(data['audio_url'], allow_redirects=False, stream=True)
+        if response.status_code != 200:
+            raise Exception("Could not download song")
+        
+        connection = connect_to_db()
+        if connection:
+            with connection.cursor() as cursor:
+                sid = generate_new_id(cursor, 0)
+        else:
+            print('err to connect database')
+        
+        path = os.path.join(output_path, f"{sid}.mp3")
+        with open(path, "wb") as output_file:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    output_file.write(chunk)
+        
+        # song_url = upload_to_drive(path)
+        picture_url = download_image(data['img_url'], os.path.join(LYRIC_AND_STYLE_OUTPUT_PATH, f'img_{sid}.png'))
+        set_mp3_cover(data['img_url'], path)
+        store_to_database(sid, data['audio_url'], picture_url)
+        
+    except Exception as e:
+        print("Error saving song:", e)
+        
     return sid
 
 def create_and_download_songs(output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
@@ -123,13 +128,19 @@ def create_and_download_songs(output_path=LYRIC_AND_STYLE_OUTPUT_PATH):
     一次性創建並下載歌曲、加入資料庫 (外部主要使用)
     '''
     start_time = time.time()
-    data = custom_generate_audio()
+    try:
+        data = custom_generate_audio()
+    except:
+        print('Suno API err')
     # data: [{...}, {...}]
 
     # print(song_ids)
     for d in data:
         print('\n\n', d)
-        save_song(d, output_path)
+        try:
+            save_song(d, output_path)
+        except:
+            print('save_song err')
         
     total_time = time.time() - start_time
     print(total_time, ' s')

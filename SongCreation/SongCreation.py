@@ -10,7 +10,7 @@ from Evaluation import Evaluation
 from LyricsCreator import LyricsCreator_llm
 from google.generativeai.types.generation_types import StopCandidateException
 from Prompt_optimize import Prompt_OPT
-from Suno_api import *
+from Suno_api_2 import *        # 使用Suno_api_2
 from SampleSongProc.SampleSongFetch.Lyrics_embedding import find_similar_songs
 from pathlib import Path
 import warnings 

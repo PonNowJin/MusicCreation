@@ -65,7 +65,7 @@ export default {
   data() {
     return {
       isShuffle: false, // 初始為不隨機播放
-      repeat: 0, // 0:不循環, 1:循環, 2:單曲循環
+      repeat: 1, // 0:不循環, 1:循環, 2:單曲循環
       progress: 0, // 音樂進度
       volume: 50, // 音量
       isPlaying: false,
