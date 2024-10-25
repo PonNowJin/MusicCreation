@@ -12,14 +12,16 @@ from google.generativeai.types.generation_types import StopCandidateException
 from Prompt_optimize import Prompt_OPT
 from Suno_api_2 import *        # 使用Suno_api_2
 from SampleSongProc.SampleSongFetch.Lyrics_embedding import find_similar_songs
+from Gemini_image_model_1 import send_message_with_image
 from pathlib import Path
 import warnings 
 warnings.filterwarnings('ignore')
 
-def SongCreation(topic:str, CREATE_SONG=1) -> bool:
+def SongCreation(topic:str='', CREATE_SONG=1, image:str=None) -> bool:
     '''
     topic: 歌曲提示詞
     CREATE_SONG: 是否傳入suno api創造並存檔
+    image: 圖片path
     '''
     try:
         new_directory = Path(ROOT_DIR + '/SongCreation')
@@ -43,8 +45,12 @@ def SongCreation(topic:str, CREATE_SONG=1) -> bool:
             topic = f.read()
         """
 
-        prompt_opt.setInputPrompt(topic)
-        topic = prompt_opt.sendMsg()
+        if not image:
+            prompt_opt.setInputPrompt(topic)
+            topic = prompt_opt.sendMsg()
+        else:
+            topic = str(send_message_with_image(image_path=image, text=topic))
+            print(topic)
 
         # 找最相近n首歌做參考
         # sample_song = find_similar_songs(topic, 'SampleSongData/Analysis_embeddings.npy', 6)
@@ -108,6 +114,6 @@ def SongCreation(topic:str, CREATE_SONG=1) -> bool:
 
 
 if __name__ == '__main__':
-    topic = '旅行的意義，輕快地訴說戀人分離後的心境'
-    SongCreation(topic, 1)
+    topic = ''
+    SongCreation(topic, CREATE_SONG=1, image='/Users/ponfu/Documents/photo/hina_ii211_434436460_2285302255010064_376298569990332650_n.jpg')
 

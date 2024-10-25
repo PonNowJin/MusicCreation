@@ -30,6 +30,11 @@
       <div class="input-container">
         <div class="chat-input">
           <i class="attachment-icon" @click="triggerFileInput"></i>
+          <!-- 縮圖預覽 -->
+          <div class="thumbnail-container" v-if="uploadedImageUrl">
+            <img :src="uploadedImageUrl" alt="Uploaded Image" class="thumbnail-image" />
+            <span class="close-icon" @click="clearUploadedFile">&times;</span>
+          </div>
           <input
             v-model="message"
             type="text"
@@ -68,8 +73,9 @@
       coverImage: require('@/assets/what_on_your_mind.png'), // 封面圖檔路徑
       
       // 檔案上傳
-      uploadedFile: null, 
-      uploadedFileName: '', 
+      uploadedFile: null,
+      uploadedFileName: '',
+      uploadedImageUrl: '', // 儲存圖片的縮圖 URL
 
       // 用於控制文字顯示的狀態
       showLeftTop: false,
@@ -100,11 +106,26 @@
         this.$refs.fileInput.click();
     },
     handleFileUpload(event) {
-        const file = event.file.target[0];
+        const file = event.target.files[0];
         if (file) {
             this.uploadedFile = file;
             this.uploadedFileName = file.name;
+            console.log('檔案上傳成功')
         }
+        // 如果檔案是圖片，顯示縮圖
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.uploadedImageUrl = e.target.result; // 獲取圖片的 base64 URL
+          };
+          reader.readAsDataURL(file); // 讀取圖片檔案
+        }
+    },
+    clearUploadedFile() {
+      this.uploadedFile = null;
+      this.uploadedFileName = '';
+      this.uploadedImageUrl = ''; // 清除縮圖
+      this.$refs.fileInput.value = null; // 這樣可以強制重新觸發上傳事件
     },
     async sendMessage() {
         if (this.message.trim() || this.uploadedFile) {
@@ -125,6 +146,7 @@
                 this.message = ''; // 清空輸入框
                 this.uploadedFile = null; // 清除上傳的檔案
                 this.uploadedFileName = ''; // 清除檔案名稱
+                this.uploadedImageUrl = ''; // 清除縮圖
                 alert('準備為您創作歌曲');
             }
         } catch (error) {
@@ -293,6 +315,39 @@
 
 .side-text-container p {
   opacity: 1; /* 預設設置為不可見，通過動畫控制顯示 */
+}
+
+.thumbnail-container {
+  position: relative; /* 使關閉圖示相對於縮圖定位 */
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.thumbnail-image {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 10px;
+}
+
+.close-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: none; /* 預設隱藏 */
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.thumbnail-container:hover .close-icon {
+  display: flex; /* 當滑鼠移動到縮圖上時顯示關閉圖示 */
 }
 
 

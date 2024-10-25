@@ -12,7 +12,7 @@ class LLM:
     def __init__(self):
         pass
 
-    def getModel(self, config=None):
+    def getModel(self, config=None, system_instruction=None):
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             generation_config=config,
@@ -21,7 +21,8 @@ class LLM:
                 HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE
-            }
+            },
+            system_instruction = system_instruction,
         )
         return model
     

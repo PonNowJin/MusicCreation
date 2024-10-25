@@ -49,6 +49,15 @@ pip install Flask
 ```bash
 pip install flask-socketio
 ```
+安裝套件庫：
+On MAC OS:
+```bash
+brew install libmagic
+```
+On Windows: 較複雜，可能要自行查詢一下
+```bash
+pip install python-magic
+```
 
 #### 執行：
 ```bash

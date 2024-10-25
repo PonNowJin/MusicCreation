@@ -3,6 +3,7 @@ import mutagen
 import base64
 import sys
 import threading
+import magic
 from flask import Flask, jsonify, request, redirect, send_file
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
@@ -274,12 +275,33 @@ def getIndexFromPlaylist(pid, sid):
             return jsonify({'index': i})
     return jsonify({'error': 'Not found'})
 
+def detect_file_type_magic(file_path):
+    file_type = magic.from_file(file_path, mime=True)
+    
+    if file_type.startswith('image'):
+        return "Image"
+    elif file_type.startswith('text'):
+        return "Text"
+    elif file_type.startswith('audio'):
+        return "Audio"
+    else:
+        return "Unknown"
 
-def song_creation_task(message):
+
+def song_creation_task(message, file:str=None):
     global now_creating
+    
+    # 抓檔案格式
+    file_type = detect_file_type_magic(file)
+    
     print(f"Creating song with message: {message}")
     now_creating = True
-    success = SongCreation(message, 1)
+    
+    # 目前只支援圖像
+    if file_type == 'Image':
+        success = SongCreation(message, CREATE_SONG=1, image=file)
+    else:
+        success = SongCreation(message, CREATE_SONG=1)
     # 創建完成後通知前端
     if success:
         socketio.emit('message', {'data': '歌曲創建成功！'})
@@ -295,16 +317,18 @@ def CreatingSong():
         # 獲取資料、存檔
         message = request.form.get('message', '')
         uploaded_file = request.files.get('file')
+        file_path = None
         
         if uploaded_file:
             filename = secure_filename(uploaded_file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = os.path.join(ROOT_DIR, 'back-end', app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(file_path)
             
         # 製作歌曲
         if not now_creating:
-            task_thread = threading.Thread(target=song_creation_task, args=(message,))
+            task_thread = threading.Thread(target=song_creation_task, args=(message, file_path))
             task_thread.start()
+            file_path = None
             return jsonify({'message': 'Song creation started'}), 200
         
         else:

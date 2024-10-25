@@ -29,6 +29,7 @@
             <th>藝人</th>
             <th>專輯</th>
             <th>時間</th>
+            <th></th> <!-- 用來放置操作按鈕 -->
           </tr>
         </thead>
         <tbody>
@@ -82,10 +83,13 @@
                 />
             </div>
             </td>
-            <td>{{ song.title }}</td>
-            <td>{{ song.artist }}</td>
-            <td>{{ playlist.title }}</td>
-            <td>{{ formatDuration(song.duration) }}</td>
+              <td>{{ song.title }}</td>
+              <td>{{ song.artist }}</td>
+              <td>{{ playlist.title }}</td>
+              <td>{{ formatDuration(song.duration) }}</td>
+              <td>
+              <more-options-dropdown :song="song" @command="handleSongCommand"></more-options-dropdown>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -96,9 +100,13 @@
   <script>
   import axios from 'axios';
   import eventBus from '@/eventBus';
+  import MoreOptionsDropdown from '@/components/MoreOptionsDropdown.vue';
   
   export default {
     name: 'PlaylistPage',
+    components: {
+      MoreOptionsDropdown,
+    },
     data() {
       return {
         playlist: { songs: [] },
@@ -137,6 +145,7 @@
     beforeUnmount() {
         // 移除事件監聽，避免重複綁定
         eventBus.off('receiveCurrentSong');
+        eventBus.off('receiveIsPlaying');
     },
     watch: {
         currentSong(newSong) {
@@ -210,7 +219,28 @@
         const pid = this.$route.params.pid;
         eventBus.emit('shuffle', {pid});
         this.isPlaying = true;
-      }
+      },
+      handleSongCommand({ command, song }) {
+        switch (command) {
+          case 'removeFromPlaylist':
+            this.playSong(song.sid);
+            break;
+          case 'addToPlaylist':
+            console.log('Add to playlist:', song.title);
+            break;
+          case 'interruption':
+            console.log('Share song:', song.title);
+            break;
+          case 'last-play':
+            console.log('last-play')
+            break;
+          case 'share':
+            console.log('Share song:', song.title);
+            break;
+          default:
+            break;
+        }
+      },
     }
   };
   </script>
@@ -319,8 +349,13 @@
   width: 50px; /* 固定第一列寬度為50px */
 }
 
-.playlist-songs th:not(:first-child),
-.playlist-songs td:not(:first-child) {
+.playlist-songs th:last-child,
+.playlist-songs td:last-child {
+  width: 50px;
+}
+
+.playlist-songs th:not(:first-child, :last-child),
+.playlist-songs td:not(:first-child, :last-child) {
   width: auto; /* 其他列自動均分剩餘寬度 */
 }
 
