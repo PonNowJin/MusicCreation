@@ -5,17 +5,36 @@
       :key="playlist.pid" 
       :to="`/playlist/${playlist.pid}`" 
       class="playlist-item">
-      <div class="cover-grid">
-        <div v-for="(song, index) in playlist.songs.slice(0, 4)" :key="index" class="cover">
-          <img :src="require(`@/assets/Output/img_${song}.png`)" :alt="song.title" class="cover-image">
+      
+      <div class="cover-grid" v-if="playlist.songs.length >= 4">
+        <!-- 當歌曲數量大於或等於 4 首，使用網格顯示封面 -->
+        <div 
+          v-for="(song, index) in playlist.songs.slice(0, 4)" 
+          :key="index" 
+          class="cover">
+          <img 
+            :src="getCoverImage(song)" 
+            :alt="song.title" 
+            class="cover-image">
         </div>
       </div>
+
+      <!-- 當歌曲數量少於 4 首時，僅顯示單一封面 -->
+      <div class="single-cover" v-else>
+        <img 
+          :src="getCoverImage(playlist.songs[0] || 'default')" 
+          alt="playlist cover" 
+          class="cover-image">
+      </div>
+
       <div class="playlist-info">
         <h3 class="playlist-title">{{ playlist.title }}</h3>
       </div>
     </router-link>
   </div>
 </template>
+
+
 
 <script>
 import axios from 'axios';
@@ -38,9 +57,18 @@ export default {
       } catch (error) {
         console.error('Error fetching playlists:', error);
       }
+    },
+    getCoverImage(song) {
+      try {
+        // 嘗試載入封面圖片，若失敗則使用預設封面
+        return require(`@/assets/Output/img_${song}.png`);
+      } catch {
+        return require('@/assets/default-playlist-cover.png');
+      }
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -57,6 +85,28 @@ export default {
   width: 90%;
   max-width: 260px;
   overflow: hidden;
+}
+
+.single-cover {
+  aspect-ratio: 1; /* 保持正方形比例 */
+  border: 2px solid #ccc;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 260px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.single-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 保持圖片比例並填滿 */
 }
 
 .cover {

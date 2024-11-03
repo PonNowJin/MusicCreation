@@ -52,9 +52,38 @@ UPLOAD_FOLDER = './uploads'  # 自訂資料夾來存儲上傳的檔案
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+    
+def generate_new_id(cursor, table=0):
+    '''
+    用於找出指定資料表內新一項元素的id
+    table: 0(Songs), 1(Playlists)
+    '''
+    try:
+        if table==0:
+            table = 'Songs'
+            id = 'sid'
+        else:
+            table = 'Playlists'
+            id = 'pid'
+            
+        query = f"SELECT {id} FROM {table} ORDER BY {id} DESC LIMIT 1" 
+        # print(query)
+        cursor.execute(query)
+        result = cursor.fetchone()[0]
+        print('result: ', result)
+        if result:
+            new_id = int(result) + 1
+        else:
+            new_id = 1
+        print("new id: ", new_id)
+        return new_id
+    except:
+        return 0
 
-def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER):
+def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER, target_sid:int=None):
     songs = []
+    if target_sid: 
+        playlist_id = 0
     try:
         connection = connect_to_db()
         with connection.cursor() as cursor:
@@ -65,6 +94,9 @@ def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER):
 
             if not sids:
                 return songs 
+            
+            if target_sid:
+                sids = [target_sid]
             
             # 根據歌曲ID查詢對應的標題
             sql = 'SELECT title FROM Songs WHERE sid IN %s'
@@ -145,20 +177,62 @@ def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER):
 @app.route('/playlist', methods=['GET'])
 def get_playlist():
     pid = request.args.get('pid')
+    sid = request.args.get('sid')
     if pid is None:
         return jsonify({"error": "pid is required"}), 400
-    songs = find_playlist(pid)
+    songs = find_playlist(playlist_id=pid, target_sid=sid)
     return jsonify(songs)
 
+# 新增播放列表
+@app.route('/playlist/create', methods=['POST'])
+def create_playlist():
+    title = request.args.get('title')
+    description = request.args.get('description')
+    share = request.args.get('share')
+    
+    try:
+        connection = connect_to_db()
+        with connection.cursor() as cursor:
+            pid = generate_new_id(cursor, 1)
+            sql = 'INSERT INTO `Playlists` (`pid`, `name`, `cover`, `user_id`, `description`, `share`) VALUES (%s, %s, %s, %s, %s, %s);'
+            re = cursor.execute(sql, (pid, title, None, None, description, share, ))
+            connection.commit()
+        return jsonify({"message": "Playlist created successfully"}), 201
+    except Exception as e:
+        print(f"新增播放列表錯誤: {e}")
+        return jsonify({"error": str(e)}), 500
+        
 # 添加一首歌到播放列表
-@app.route('/playlist', methods=['POST'])
-def add_song_to_playlist(pid:str):
-    new_song = request.json
-    connection = connect_to_db()
-    with connection.cursor() as cursor:
-        sql = 'INSERT INTO `song_playlist` (`sid`, `pid`) VALUES (%s, %s)'
-        re = cursor.execute(sql, (new_song.sid, pid))
-    return jsonify({"message": "Song added to playlist"}), 201
+@app.route('/playlist/add-to-playlist', methods=['POST'])
+def add_song_to_playlist():
+    pid = request.args.get('pid')
+    sid = request.args.get('sid')
+    try:
+        connection = connect_to_db()
+        with connection.cursor() as cursor:
+            sql = 'INSERT INTO `song_playlist` (`sid`, `pid`) VALUES (%s, %s)'
+            re = cursor.execute(sql, (sid, pid, ))
+            connection.commit()
+        return jsonify({"message": "Song added to playlist"}), 201
+    except Exception as e:
+            print(f"新增歌曲至播放列表錯誤: {e}")
+            return jsonify({"message": str(e)}), 201
+        
+# 從播放列表刪除一首歌
+@app.route('/playlist/remove', methods=['POST'])
+def remove_from_playlist():
+    pid = request.args.get('pid')
+    sid = request.args.get('sid')
+    try:
+        connection = connect_to_db()
+        with connection.cursor() as cursor:
+            sql = 'DELETE FROM song_playlist WHERE `song_playlist`.`sid` = %s AND `song_playlist`.`pid` = %s'
+            re = cursor.execute(sql, (sid, pid, ))
+            connection.commit()
+        return jsonify({"message": "Song removed from playlist"}), 201
+    except Exception as e:
+            print(f"新增歌曲至播放列表錯誤: {e}")
+            return jsonify({"message": str(e)}), 201
 
 
 @app.route('/media/<filename>')
@@ -179,6 +253,8 @@ def getPlaylistInfo(pid):
     return {
         "pid": 0,
         "title": "ALL",
+        "description": "",
+        "share": "",
         "songs": [
             song1, song2, song3...
         ]
@@ -186,10 +262,11 @@ def getPlaylistInfo(pid):
     '''
     connection = connect_to_db()
     with connection.cursor() as cursor:
-        sql = 'SELECT pid, name FROM Playlists WHERE pid = %s'
+        sql = 'SELECT pid, name, description FROM Playlists WHERE pid = %s'
         cursor.execute(sql, (pid, ))
         playlist = cursor.fetchone()
         playlist_title = playlist[1]
+        playlist_description = playlist[2]
     
         '''
         sql = 'SELECT sid, title, artist FROM Songs WHERE sid IN (SELECT sid FROM song_playlist WHERE pid = %s)'
@@ -211,6 +288,7 @@ def getPlaylistInfo(pid):
         final_data = {
             'pid': pid,
             'title': playlist_title,
+            'description': playlist_description,
             'songs': songs,
         }
         return jsonify(final_data)

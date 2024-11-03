@@ -2,15 +2,31 @@
     <div class="playlist-container">
       <div class="playlist-header">
         <!-- 播放列表封面區域 -->
-        <div class="playlist-cover-grid">
-          <div v-for="(song, index) in playlist.songs.slice(0, 4)" :key="index" class="cover">
-            <img :src="require(`@/assets/Output/img_${song.sid}.png`)" :alt="song.title" class="cover-image">
+        <div class="playlist-cover-grid" v-if="playlist.songs.length >= 4">
+          <!-- 當歌曲數量大於或等於 4 首，使用網格顯示封面 -->
+          <div 
+            v-for="(song, index) in playlist.songs.slice(0, 4)" 
+            :key="index" 
+            class="cover">
+            <img 
+              :src="getCoverImage(song)" 
+              :alt="song.title" 
+              class="cover-image">
           </div>
+        </div>
+
+        <!-- 當歌曲數量少於 4 首時，僅顯示單一封面 -->
+        <div class="single-cover" v-else>
+          <img 
+            :src="getCoverImage(playlist.songs[0] || 'default')" 
+            alt="playlist cover" 
+            class="cover-image">
         </div>
         
         <!-- 播放列表信息區域 -->
         <div class="playlist-info">
           <h2 class="playlist-title">{{ playlist.title }}</h2>
+          <h2 class="playlist-description">{{ playlist.description }}</h2>
           <p class="playlist-artist">{{ playlist.artist }}</p>
           <div class="playlist-buttons">
             <button class="play-btn" @click="togglePlayFirst">播放</button>
@@ -94,6 +110,13 @@
         </tbody>
       </table>
     </div>
+
+    <!-- 新增播放列表組件 -->
+    <NewPlaylistDialog v-model="isDialogVisible"
+      :dialogVisible="isDialogVisible"
+      @create="handleCreatePlaylist"
+      @update:dialogVisible="isDialogVisible = $event" 
+    />
   </div>
 </template>
   
@@ -101,11 +124,14 @@
   import axios from 'axios';
   import eventBus from '@/eventBus';
   import MoreOptionsDropdown from '@/components/MoreOptionsDropdown.vue';
+  import NewPlaylistDialog from "@/components/NewPlaylistDialog.vue";
+  import { mapActions, mapState } from 'vuex';
   
   export default {
     name: 'PlaylistPage',
     components: {
       MoreOptionsDropdown,
+      NewPlaylistDialog,
     },
     data() {
       return {
@@ -115,6 +141,7 @@
         isPlaying: false,
         hoveredSong: null,
         defaultImage: require('@/assets/no-cover.png'), // 預設圖片
+        isDialogVisible: false,
       };
     },
     mounted() {
@@ -135,12 +162,16 @@
       eventBus.emit('requestIsPlaying');
     },
     computed: {
-        playIconVisible() {
-            return (song) => {
-            // 檢查當前歌曲的狀態
-            return this.currentSong.sid === song.sid && !this.isPlaying;
-            };
-        }
+      ...mapState(['currentIndex', ]),
+      playIconVisible() {
+          return (song) => {
+          // 檢查當前歌曲的狀態
+          return this.currentSong.sid === song.sid && !this.isPlaying;
+          };
+      },
+      playlistId() {
+        return this.$route.params.pid;
+      },
     },
     beforeUnmount() {
         // 移除事件監聽，避免重複綁定
@@ -156,8 +187,17 @@
         },
     },
     methods: {
+      ...mapActions(['updatePlaylist', 'updateCurrentIndex', 'addSongToPlaylist']),
       imageSrc(sid) {
         return require(`@/assets/Output/img_${sid}.png`);
+      },
+      getCoverImage(song) {
+        try {
+          // 嘗試載入封面圖片，若失敗則使用預設封面
+          return require(`@/assets/Output/img_${song.sid}.png`);
+        } catch {
+          return require('@/assets/default-playlist-cover.png');
+        }
       },
       handleError(event) {
         event.target.src = this.defaultImage; // 如果圖片加載失敗，設置為預設圖片
@@ -220,25 +260,88 @@
         eventBus.emit('shuffle', {pid});
         this.isPlaying = true;
       },
+      handleCreatePlaylist(playlistData) {
+        // 接收到子組件傳遞的播放列表資料，進行處理
+        console.log("新播放列表資料:", playlistData);
+        // 您可以在這裡把播放列表資料提交到伺服器
+      },
+      async addSongToPlaylist(pid, song) {
+        console.log(`添加歌曲 ${song.title} 到播放列表 ${pid}`);
+        const response = await axios.post('/playlist/add-to-playlist', null, {
+          params: {
+            pid: pid,
+            sid: song.sid,
+          },
+        });
+        console.log(response.data.message);
+      },
+      async removeFromPlaylist(pid, song) {
+        const response = await axios.post('/playlist/remove', null, {
+          params: {
+            pid: pid,
+            sid: song.sid,
+          },
+        });
+        const sid = song.sid;
+        this.playlist.songs = this.playlist.songs.filter(song => song.sid !== sid); // 從前端數據中刪除歌曲
+        console.log(this.playlist)
+        console.log(response.data.message);
+      },
+      async interruption(song, last) {
+        const response = await axios.get('/playlist', {
+          params: {
+            pid: 0,
+            sid: song.sid,
+          }
+          });
+          let song_data = response.data[0];
+          song_data.sid = parseInt(song_data.sid);
+          let currentPlaylist = this.$store.state.playlist;
+
+          console.log(currentPlaylist);
+          currentPlaylist = currentPlaylist.filter(song => song.sid !== song_data.sid);
+          if (last==0) {
+            currentPlaylist.splice(this.currentIndex+1, 0, song_data); 
+          }
+          else {
+            currentPlaylist.splice(currentPlaylist.length, 0, song_data); 
+          }
+
+          this.updatePlaylist(currentPlaylist);
+      },
       handleSongCommand({ command, song }) {
-        switch (command) {
-          case 'removeFromPlaylist':
-            this.playSong(song.sid);
-            break;
-          case 'addToPlaylist':
-            console.log('Add to playlist:', song.title);
-            break;
-          case 'interruption':
-            console.log('Share song:', song.title);
-            break;
-          case 'last-play':
-            console.log('last-play')
-            break;
-          case 'share':
-            console.log('Share song:', song.title);
-            break;
-          default:
-            break;
+        if (typeof command === 'string' && command.indexOf('addToPlaylist:') === 0) {
+          const pid = command.split(':')[1]; // 取得 target pid
+          this.addSongToPlaylist(pid, song);
+        } else {
+          switch (command) {
+            case 'removeFromPlaylist':
+              if (this.playlistId == '0') {
+                alert('無法移除ALL中的歌曲！')
+              }
+              else {
+                this.removeFromPlaylist(this.playlistId, song);
+                console.log('removeFromPlaylist:', song.title);
+              }
+              break;
+            case 'interruption':
+              this.interruption(song, 0);
+              console.log('interruption song:', song.title);
+              break;
+            case 'last-play':
+              this.interruption(song, 1);
+              console.log('last-play')
+              break;
+            case 'share':
+              console.log('Share song:', song.title);
+              break;
+            case 'add-new-playlist':
+              console.log('add-play-list')
+              this.isDialogVisible = true;
+              break;
+            default:
+              break;
+          }
         }
       },
     }
@@ -278,6 +381,28 @@
   overflow: hidden;
 }
 
+.single-cover {
+  aspect-ratio: 1; /* 保持正方形比例 */
+  border: 2px solid #ccc;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 260px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.single-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 保持圖片比例並填滿 */
+}
+
 .cover {
   position: relative;
 }
@@ -314,6 +439,11 @@
 .playlist-title {
   font-size: 32px;
   font-weight: bold;
+}
+
+.playlist-description {
+  font-size: 14px;
+  font-weight: normal;
 }
 
 .playlist-artist {

@@ -29,7 +29,18 @@ export default new Vuex.Store({
     },
     setCurrentIndex(state, status) {
       state.currentIndex = status;
-    }
+    },
+    insertSongToPlaylist(state, { song, index }) {
+      console.log(song);
+      console.log(index);
+      /*
+      if (index >= 0 && index <= state.playlist.length) {
+        state.playlist.splice(index, 0, song); 
+      } else {
+        console.warn("insertSongToPlaylist: Index out of range.");
+      }
+        */
+    },
   },
   actions: {
     updateIsSongCreating({ commit }, status) {
@@ -49,6 +60,13 @@ export default new Vuex.Store({
     },
     updateCurrentIndex({ commit }, status) {
       commit('setCurrentIndex', status);
+    },
+    addSongToPlaylist({ commit }, { song, index }) {
+      if (!song) {
+        console.warn("addSongToPlaylist: 'song' is undefined or null.");
+        return;
+      }
+      commit('insertSongToPlaylist', { song, index });
     },
   },
   getters: {
