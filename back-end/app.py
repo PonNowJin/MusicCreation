@@ -79,9 +79,20 @@ def generate_new_id(cursor, table=0):
         return new_id
     except:
         return 0
+    
+@app.route('/get-cover/<path:filename>')
+def get_cover(sid):
+    cover_path = os.path.join(MUSIC_FOLDER, f"img_{sid}.png")
+    return send_file(cover_path, mimetype='image/jpeg')
+
+@app.route('/get-mp3/<path:filename>')
+def get_mp3(sid):
+    mp3_path = os.path.join(MUSIC_FOLDER, f"{sid}.mp3")
+    return send_file(mp3_path, mimetype='audio/mpeg')
 
 def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER, target_sid:int=None):
     songs = []
+    print('searching: ', playlist_id)
     if target_sid: 
         playlist_id = 0
     try:
@@ -178,6 +189,7 @@ def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER, target_sid:int=No
 def get_playlist():
     pid = request.args.get('pid')
     sid = request.args.get('sid')
+    print('\n\n\n\n', pid)
     if pid is None:
         return jsonify({"error": "pid is required"}), 400
     songs = find_playlist(playlist_id=pid, target_sid=sid)
@@ -368,9 +380,10 @@ def detect_file_type_magic(file_path):
 
 def song_creation_task(message, file:str=None):
     global now_creating
-    
+    file_type = ''
     # 抓檔案格式
-    file_type = detect_file_type_magic(file)
+    if file:
+        file_type = detect_file_type_magic(file)
     
     print(f"Creating song with message: {message}")
     now_creating = True

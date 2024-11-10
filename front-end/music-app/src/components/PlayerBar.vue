@@ -292,7 +292,11 @@ export default {
     },
     async fetchPlaylist(pid) {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/playlist?pid=${pid}`);
+        const response = await axios.get('/playlist', {
+          params: {
+            pid: pid,
+          }
+        });
         this.updatePlaylist(response.data);
         console.log(this.playlist)
       } catch (error) {
@@ -302,7 +306,8 @@ export default {
     async initializePlayer(pid) {
       this.updateCurrentIndex(0);
       try {
-        await this.fetchPlaylist(pid);
+        const id = parseInt(pid['pid']);
+        await this.fetchPlaylist(id);
         this.loadSong();
         this.animateProgressBar();
       } catch (error) {
