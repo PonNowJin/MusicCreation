@@ -19,6 +19,7 @@ ROOT_DIR = os.getenv('ROOT_DIR')
 sys.path.append(ROOT_DIR)
 from connect import * 
 from SongCreation.SongCreation import SongCreation
+import urllib.parse
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -70,29 +71,28 @@ def generate_new_id(cursor, table=0):
         # print(query)
         cursor.execute(query)
         result = cursor.fetchone()[0]
-        print('result: ', result)
         if result:
             new_id = int(result) + 1
         else:
             new_id = 1
-        print("new id: ", new_id)
         return new_id
     except:
         return 0
     
-@app.route('/get-cover/<path:filename>')
-def get_cover(sid):
-    cover_path = os.path.join(MUSIC_FOLDER, f"img_{sid}.png")
-    return send_file(cover_path, mimetype='image/jpeg')
+@app.route('/api/get-cover/<path:filename>')
+@cross_origin()
+def get_cover(filename):
+    cover_path = os.path.join(MUSIC_FOLDER, f"{filename}.png")
+    return send_file(cover_path, mimetype='image/png')
 
-@app.route('/get-mp3/<path:filename>')
-def get_mp3(sid):
-    mp3_path = os.path.join(MUSIC_FOLDER, f"{sid}.mp3")
+@app.route('/api/get-mp3/<path:filename>')
+@cross_origin()
+def get_mp3(filename):
+    mp3_path = os.path.join(MUSIC_FOLDER, f"{filename}.mp3")
     return send_file(mp3_path, mimetype='audio/mpeg')
 
 def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER, target_sid:int=None):
     songs = []
-    print('searching: ', playlist_id)
     if target_sid: 
         playlist_id = 0
     try:
@@ -172,7 +172,8 @@ def find_playlist(playlist_id:int, directory:str=MUSIC_FOLDER, target_sid:int=No
                     "url": path,
                     "title": title,
                     "artist": audio.get('TPE1', 'Unknown'),
-                    "cover": data_uri,
+                    "cover": f'http://127.0.0.1:5000/api/get-cover/img_{sid}',
+                    "mp3": f'http://127.0.0.1:5000/api/get-mp3/{sid}',
                     "duration": audio.info.length,
                 })
             except mutagen.MutagenError as e:
@@ -261,6 +262,8 @@ def getPlaylistInfo(pid):
         "title": title,
         "artist": artist,
         "duration": duration,
+        "cover": cover,
+        "mp3": mp3,
     }
     return {
         "pid": 0,
@@ -295,6 +298,8 @@ def getPlaylistInfo(pid):
                 'title': d['title'],
                 'artist': d['artist'],
                 'duration': d['duration'],
+                'cover': d['cover'],
+                'mp3': d['mp3'],
             }
             songs.append(song)
         final_data = {

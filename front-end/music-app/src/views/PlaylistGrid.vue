@@ -59,10 +59,15 @@ export default {
       }
     },
     getCoverImage(song) {
-      try {
-        // 嘗試載入封面圖片，若失敗則使用預設封面
-        return require(`@/assets/Output/img_${song}.png`);
-      } catch {
+      if (song != 'default') {
+        try {
+          // 嘗試載入封面圖片，若失敗則使用預設封面
+          return `http://127.0.0.1:5000/api/get-cover/img_${song}`;
+        } catch {
+          return require('@/assets/default-playlist-cover.png');
+        }
+      }
+      else {
         return require('@/assets/default-playlist-cover.png');
       }
     }

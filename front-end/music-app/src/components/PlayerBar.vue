@@ -88,7 +88,7 @@ export default {
     },
     cover() {
         try {
-            return require(`@/assets/Output/img_${this.currentSong.sid}.png`)
+            return this.currentSong.cover;
         } catch (error) {
             return require('@/assets/no-cover.png')
         }
@@ -126,7 +126,7 @@ export default {
       }
       // 重置音訊元素的 src 並加載新歌曲
       this.$refs.audio.src = "";
-      this.$refs.audio.src = require(`@/assets/Output/${this.currentSong.sid}.mp3`)
+      this.$refs.audio.src = this.currentSong.mp3;
       this.$refs.audio.load(); 
       this.fetchLyrics(this.currentSong.sid);
 

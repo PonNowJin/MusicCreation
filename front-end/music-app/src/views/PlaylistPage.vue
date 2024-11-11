@@ -92,7 +92,7 @@
                      
                 <!-- 封面圖 -->
                 <img 
-                    :src="imageSrc(song.sid)" 
+                    :src="song.cover" 
                     :alt="song.title" 
                     @error="handleError" 
                     class="song-cover"
@@ -192,10 +192,27 @@
         return require(`@/assets/Output/img_${sid}.png`);
       },
       getCoverImage(song) {
+        if (song != 'default') {
+          try {
+            // 嘗試載入封面圖片，若失敗則使用預設封面
+            return song.cover;
+          } catch {
+            return require('@/assets/default-playlist-cover.png');
+          }
+        }
+        else {
+          return require('@/assets/default-playlist-cover.png');
+        }
+      },
+      async fetchCover(sid) {
         try {
-          // 嘗試載入封面圖片，若失敗則使用預設封面
-          return require(`@/assets/Output/img_${song.sid}.png`);
-        } catch {
+          const response = await axios.get(`http://127.0.0.1:5000/get-cover/${sid}`, {
+            responseType: 'blob',
+          });
+          const url = URL.createObjectURL(response.data);
+          return url;
+        } catch (error) {
+          console.error("Failed to fetch cover image:", error);
           return require('@/assets/default-playlist-cover.png');
         }
       },
