@@ -463,10 +463,11 @@ def GetLyric(sid):
                     processed_line = ""
 
                     # 處理每一分段，檢查是否超過13個字
+                    max_line = 12
                     for sub_line in sub_lines:
-                        while len(sub_line) > 13:
-                            processed_line += sub_line[:13] + "\n"  # 每13個字後加換行
-                            sub_line = sub_line[13:]  # 處理剩餘的部分
+                        while len(sub_line) > max_line:
+                            processed_line += sub_line[:max_line] + "\n"  # 每13個字後加換行
+                            sub_line = sub_line[max_line:]  # 處理剩餘的部分
                         processed_line += sub_line + '\n' # 加入不超過13個字的段落
 
                     formatted_lyric += processed_line + '\n'  # 累加到最終格式化的歌詞結果

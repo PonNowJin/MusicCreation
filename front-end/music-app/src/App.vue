@@ -44,7 +44,7 @@
               <h3>待播清單 <span @click="clearPlaylist" class="clear">清除</span></h3>
               <ul>
                 <li v-for="(song) in playlist.slice(currentIndex+1)" :key="song.sid" class="playlist-item">
-                  <img :src="require(`@/assets/Output/img_${song.sid}.png`)" alt="song cover" class="cover">
+                  <img :src="song.cover" alt="song cover" class="cover">
                   <div class="song-info">
                     <p class="title">{{ song.title }}</p>
                     <p class="artist">{{ song.artist }}</p>
