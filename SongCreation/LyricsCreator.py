@@ -131,7 +131,7 @@ class LyricsCreator_llm:
     def setInputPrompt(self, prompt):
         self.input_prompt = prompt
 
-    def sendMsg(self, output_dir='', evaluation=None):
+    def sendMsg(self, output_dir='', evaluation:str=None, music_style:str=None):
         lyrics_path = os.path.join(output_dir, 'lyrics.txt')
         musicStyle_path = os.path.join(output_dir, 'MusicStyle.txt')
         title_path = os.path.join(output_dir, 'Title.txt')
@@ -142,10 +142,15 @@ class LyricsCreator_llm:
             title = self.chat.send_message(full_prompt)
             self.save_to_file(title_path, title.text)
             
-            # ask for music style
-            full_prompt = self.music_style_prompt + self.music_style_sample + f"\ninput：\n{self.input_prompt}"
-            music_style = self.chat.send_message(full_prompt)
-            self.save_to_file(musicStyle_path, music_style.text)
+            # ask for music style (若有music_style傳入，則不去生成)
+            print('music_style: ', music_style)
+            if not music_style:
+                full_prompt = self.music_style_prompt + self.music_style_sample + f"\ninput：\n{self.input_prompt}"
+                music_style = self.chat.send_message(full_prompt)
+                self.save_to_file(musicStyle_path, music_style.text)
+            else:
+                self.save_to_file(musicStyle_path, music_style)
+                
             
             # ask for lyric
             full_prompt = self.base_prompt + self.lyrics_tips + f"\ninput：\n{self.input_prompt}"

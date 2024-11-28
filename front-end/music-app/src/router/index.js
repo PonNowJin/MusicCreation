@@ -3,6 +3,7 @@ import PlaylistPage from '@/views/PlaylistPage.vue';
 import PlaylistGrid from '@/views/PlaylistGrid.vue' // 所有播放列表頁面
 import NotFoundPage from '@/views/NotFoundPage.vue'  // 404 頁面
 import SongCreationPage from '@/views/SongCreationPage.vue' // 創作歌曲頁面
+import VideoPage from '@/views/VideoPage.vue' // mp4 demo page
 
 // 定義路由對應的頁面
 const routes = [
@@ -21,8 +22,11 @@ const routes = [
     name: 'Playlist',
     component: PlaylistPage
   },
-
-
+  {
+    path: '/videos',
+    name: 'Videos',
+    component: VideoPage 
+  },
   {
     path: '/:catchAll(.*)',
     name: 'NotFound',

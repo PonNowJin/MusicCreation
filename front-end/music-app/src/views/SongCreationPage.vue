@@ -110,7 +110,7 @@
         if (file) {
             this.uploadedFile = file;
             this.uploadedFileName = file.name;
-            console.log('檔案上傳成功')
+            alert('檔案上傳成功')
         }
         // 如果檔案是圖片，顯示縮圖
         if (file.type.startsWith('image/')) {

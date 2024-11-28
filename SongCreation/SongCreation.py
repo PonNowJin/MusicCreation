@@ -17,11 +17,14 @@ from pathlib import Path
 import warnings 
 warnings.filterwarnings('ignore')
 
-def SongCreation(topic:str='', CREATE_SONG=1, image:str=None) -> bool:
+def SongCreation(topic:str='', CREATE_SONG=1, image:str=None, music_style:str=None, preprocessed:bool=False, CREATE_VIDEO:bool=False) -> bool:
     '''
     topic: 歌曲提示詞
     CREATE_SONG: 是否傳入suno api創造並存檔
     image: 圖片path
+    music_style: 已指定的風格字串
+    preprocessed: 是否已經經過預處理
+    CREATE_VIDEO: 是否要生成影片
     '''
     try:
         new_directory = Path(ROOT_DIR + '/SongCreation')
@@ -48,6 +51,8 @@ def SongCreation(topic:str='', CREATE_SONG=1, image:str=None) -> bool:
         if not image:
             prompt_opt.setInputPrompt(topic)
             topic = prompt_opt.sendMsg()
+        elif preprocessed:
+            pass
         else:
             topic = str(send_message_with_image(image_path=image, text=topic))
             print(topic)
@@ -77,7 +82,7 @@ def SongCreation(topic:str='', CREATE_SONG=1, image:str=None) -> bool:
         evaluation = None
         # 做第一次歌詞、曲風生成
         try:
-            lyricsCreator_llm.sendMsg(output_dir=OUTPUT_DIR)
+            lyricsCreator_llm.sendMsg(output_dir=OUTPUT_DIR, music_style=music_style)
             evaluation = evaluation_llm.evaluation(output_dir=OUTPUT_DIR)  # evaluation為評分和建議的text
             print(evaluation_llm.getScore())
         except StopCandidateException as e:
@@ -87,7 +92,7 @@ def SongCreation(topic:str='', CREATE_SONG=1, image:str=None) -> bool:
         count = 0
         while evaluation_llm.score < 90:
             try:
-                lyricsCreator_llm.sendMsg(output_dir=OUTPUT_DIR, evaluation=evaluation)
+                lyricsCreator_llm.sendMsg(output_dir=OUTPUT_DIR, evaluation=evaluation, music_style=music_style)
                 evaluation = evaluation_llm.evaluation(output_dir=OUTPUT_DIR)
                 print(evaluation_llm.getScore())
                 count += 1
@@ -105,6 +110,12 @@ def SongCreation(topic:str='', CREATE_SONG=1, image:str=None) -> bool:
             print("創建歌曲...")
             create_and_download_songs()
             print("歌曲存檔完成")
+            
+        if CREATE_VIDEO:
+            print("生成影片...")
+            # video_create_func()...
+            print("影片生成完成")
+            
         return True
     
     except Exception as e:
@@ -114,6 +125,6 @@ def SongCreation(topic:str='', CREATE_SONG=1, image:str=None) -> bool:
 
 
 if __name__ == '__main__':
-    topic = ''
-    SongCreation(topic, CREATE_SONG=1, image='/Users/ponfu/Documents/photo/hina_ii211_434436460_2285302255010064_376298569990332650_n.jpg')
+    topic = '九彎十八拐，多想走入你的心'
+    SongCreation(topic, CREATE_SONG=0, image=None, music_style='handsome boy, beautiful girl.', preprocessed=True)
 

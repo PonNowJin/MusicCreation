@@ -22,6 +22,9 @@
           <li @click="$router.push('/all-playlists')" :class="{ 'active-link': $route.path === '/all-playlists' }">
             <span class="nav-text">播放清單</span>
           </li>
+          <li @click="$router.push('/videos')" :class="{ 'active-link': $route.path === '/videos' }">
+            <span class="nav-text">影片</span>
+          </li>
         </ul>
       </aside>
       <div class="main-content" :class="{ 'lyric-visible': showLyric||showPlaylist }">
