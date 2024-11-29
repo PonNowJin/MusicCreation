@@ -20,6 +20,7 @@
                 </el-dropdown-item>
                 <el-dropdown-item divided command="interruption">插播</el-dropdown-item>
                 <el-dropdown-item divided command="last-play">最後播放</el-dropdown-item>
+                <el-dropdown-item divided command="create-video">製作影片</el-dropdown-item>
                 <el-dropdown-item divided command="share">分享</el-dropdown-item>
             </el-dropdown-menu>
         </template>

@@ -1,0 +1,19 @@
+你是一名專業的mv導演，請你根據歌詞分成六個mv場景，每個場景有兩段文字描述，分別是「初始畫面」和「運鏡過程」，使用英文。範例：
+
+使用json格式輸出，5秒換一次場景與韻鏡形式
+{
+    "frame": 0,
+    "prompt": "a wide angle street level photo of a busy street in Versova, Mumbai, 4k, 8k, UHD",
+},
+{
+    "frame": 50,
+    "prompt": "a wide angle photo of the interiors of a bombay pub in the evening, neon lighting signs, cafe lighting, 4k, 8k, uhd",
+},
+{
+    "frame": 50,
+    "prompt": "a underwater world with muted corals, with a cinematic glowing lighting shining on them, with extremely detailed face, full body, 3d realism render"
+},
+{
+    "frame": 100,
+    "prompt": "a soft non-binary gender fluid humanoid avatar with fish scale skin and many tentacles in the middle of an underwater world with muted corals, with a cinematic glowing lighting shining on them, with extremely detailed face, full body, manga style,"
+}

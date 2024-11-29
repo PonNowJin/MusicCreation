@@ -20,6 +20,7 @@ sys.path.append(ROOT_DIR)
 from connect import * 
 from SongCreation.SongCreation import SongCreation
 from SongCreation.imitation import song_analyzing, new_song
+from SongCreation.SongToVideo import creating_song
 import urllib.parse
 import cv2
 
@@ -579,6 +580,46 @@ def get_video(filename):
         if os.path.exists(video_path):
             return send_file(video_path, mimetype='video/mp4')
     return "Video not found", 404
+
+
+# 生成影片
+@app.route('/create-video', methods=['POST'])
+def create_video():
+    data = request.get_json()
+
+    # 驗證資料是否存在
+    if not data or 'sid' not in data or 'title' not in data:
+        return jsonify({
+            'status': 'error',
+            'message': 'Missing sid or title'
+        }), 400
+
+    sid = data['sid']
+    songTitle = data['title']
+    
+    print('sid:', sid)
+    print('songTitle: ', songTitle)
+    
+    # 歌詞字串
+    try:
+        connection = connect_to_db()
+        with connection.cursor() as cursor:
+            sql = 'SELECT lyrics FROM Songs WHERE sid = %s'
+            cursor.execute(sql, (sid, ))
+            lyric = cursor.fetchone()[0]
+            
+    except pymysql.err.InterfaceError as e:
+            print(f"資料庫連接出現問題: {e}")
+            # 重新連接資料庫，或回傳錯誤訊息
+            return jsonify({"error": "Database connection error"}), 500
+    
+    
+    # 影片生成API 
+    task_thread = threading.Thread(target=creating_song, args=(sid , songTitle, lyric))
+    task_thread.start()
+    
+    return jsonify({"message": "successful building create-video task"}), 200
+
 
 
 if __name__ == '__main__':

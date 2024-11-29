@@ -326,6 +326,14 @@
 
           this.updatePlaylist(currentPlaylist);
       },
+      async createVideo(song) {
+        const response = await axios.post('/create-video', {
+          sid: song.sid,
+          title: song.title,
+        });
+        console.log(response.data.message)
+        alert('開始製作影片！')
+      },
       handleSongCommand({ command, song }) {
         if (typeof command === 'string' && command.indexOf('addToPlaylist:') === 0) {
           const pid = command.split(':')[1]; // 取得 target pid
@@ -347,14 +355,18 @@
               break;
             case 'last-play':
               this.interruption(song, 1);
-              console.log('last-play')
+              console.log('last-play');
               break;
             case 'share':
               console.log('Share song:', song.title);
               break;
             case 'add-new-playlist':
-              console.log('add-play-list')
+              console.log('add-play-list');
               this.isDialogVisible = true;
+              break;
+            case 'create-video':
+              console.log('creaet-video');
+              this.createVideo(song);
               break;
             default:
               break;
