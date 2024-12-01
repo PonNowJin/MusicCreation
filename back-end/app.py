@@ -19,7 +19,7 @@ ROOT_DIR = os.getenv('ROOT_DIR')
 sys.path.append(ROOT_DIR)
 from connect import * 
 from SongCreation.SongCreation import SongCreation
-from SongCreation.imitation import song_analyzing, new_song
+from SongCreation.imitation import Song_analyziing
 from SongCreation.SongToVideo import creating_song
 import urllib.parse
 import cv2
@@ -402,9 +402,11 @@ def song_creation_task(message, file:str=None):
     if file_type == 'Image':
         success = SongCreation(message, CREATE_SONG=1, image=file)
     elif file_type == 'Audio':
-        music_style = song_analyzing(file)  # 音樂風格
-        message += new_song(file)           # 情感與內容
-        success = SongCreation(message, CREATE_SONG=1, music_style=music_style, preprocessed=True)
+        SA = Song_analyziing(file)
+        music_struct, music_style, summarize = SA.song_analyzing()
+        message += music_struct
+        message += summarize          # 情感與內容
+        success = SongCreation(topic=message, CREATE_SONG=1, music_style=music_style, preprocessed=True)
     else:
         success = SongCreation(message, CREATE_SONG=1)
     # 創建完成後通知前端

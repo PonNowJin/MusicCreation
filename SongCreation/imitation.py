@@ -45,15 +45,41 @@ def song_analyzing(filePath):
     [song, label, "你是一名專業的音樂製作人，擁有豐富的理論知識，對音樂結構與類型瞭如指掌，我想要你分析一首歌曲，請參考我所附的音訊檔案(歌曲)與文字檔(標籤集)後，回答我以下問題:\n1.分析歌曲的結構(BPM、每個段落的調性與歌詞情緒)，歌詞內容，以\n結構:\n歌詞內容:\n的形式分別回答我\n2.參考我所附的標籤集，從{Style}{Genre}{Vocal}中選出符合這首歌曲類型的標籤，以[標籤名]與逗號分隔的格式呈現給我，並且必須確認是標籤集中所具備的標籤"]
   )
   return result.text
+
 def new_song(input):
   output = model.generate_content(
-      ["請為我分析以下問答，並:\n1.找到歌詞內容，以150字內的中文總結這段文字所提到的情緒\n2.針對第二個問題只保留回答的部分\n", input]
+    ["請為我分析以下問答，並:\n1.找到歌詞內容，以150字內的中文總結這段文字所提到的情緒\n2.針對第二個問題只保留回答的部分\n", input]
   )
   return output.text
 
 
+class Song_analyziing:
+  song = None
+  label = genai.upload_file(path = os.path.join(ROOT_DIR, 'SongCreation', 'MusicStyle_sample.txt'))
+  
+  def __init__(self, filePath):
+    self.song = genai.upload_file(path = filePath)
+  
+  def song_analyzing(self):
+    music_struct = model.generate_content(
+      [self.song, "你是一名專業的音樂製作人，擁有豐富的理論知識，對音樂結構與類型瞭如指掌，我想要你分析一首歌曲，請參考我所附的音訊檔案(歌曲)與文字檔(標籤集)後，回答我以下問題:\n分析歌曲的結構(BPM、每個段落的調性與歌詞情緒)，歌詞內容，以\n結構:\n歌詞內容:\n的形式分別回答我\n"]
+    ).text
+    music_style = model.generate_content(
+      [self.song, label, "參考我所附的標籤集，從{Style}{Genre}{Vocal}中選出符合這首歌曲類型的標籤，以標籤名與逗號分隔的格式呈現給我，並且必須確認是標籤集中所具備的標籤"]
+    ).text
+    summarize = model.generate_content(
+      [self.song, "請為我分析以下問答，並找到歌詞內容，以150字內的中文總結這段文字所提到的情緒"]
+    ).text
+    
+    return music_struct, music_style, summarize
+
+
 if __name__ == '__main__':
   filePath = '/Users/ponfu/Documents/music/菲道尔 & 大颖 - 在加納共和國離婚 Divorce in Ghana (Official Music Video).mp3'
-  print(song_analyzing(filePath))
-  print('\n\n', new_song(filePath))
-
+  SA = Song_analyziing(filePath)
+  a, b, c = SA.song_analyzing()
+  # print(a)
+  print(b)
+  # print(c)
+  # print('\n\n', new_song(filePath))
+  # print(song_imitation(filePath))

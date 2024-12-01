@@ -12,6 +12,7 @@ from time import sleep
 
 # 指定讀取根目錄的 .env 檔案
 load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+load_dotenv(override=True)
 
 ROOT_DIR = os.getenv('ROOT_DIR')
 OUTPUT_FOLDER = os.getenv('LYRIC_AND_STYLE_OUTPUT_PATH')
@@ -32,7 +33,7 @@ def create_video_api(songTitle:str):
     payload = {
         "animation_prompts": json_data,
         "fps": 3,
-        "max_frames": 90,
+        "max_frames": 153,
     }
 
     response = requests.post(

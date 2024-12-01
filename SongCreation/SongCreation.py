@@ -10,7 +10,7 @@ from Evaluation import Evaluation
 from LyricsCreator import LyricsCreator_llm
 from google.generativeai.types.generation_types import StopCandidateException
 from Prompt_optimize import Prompt_OPT
-from Suno_api_2 import *        # 使用Suno_api_2
+from Suno_api_3 import *        # 使用Suno_api_3
 from SampleSongProc.SampleSongFetch.Lyrics_embedding import find_similar_songs
 from Gemini_image_model_1 import send_message_with_image
 from pathlib import Path
@@ -48,11 +48,11 @@ def SongCreation(topic:str='', CREATE_SONG=1, image:str=None, music_style:str=No
             topic = f.read()
         """
 
-        if not image:
+        if not image and not preprocessed:
             prompt_opt.setInputPrompt(topic)
             topic = prompt_opt.sendMsg()
         elif preprocessed:
-            pass
+            print('topic: ', topic)
         else:
             topic = str(send_message_with_image(image_path=image, text=topic))
             print(topic)

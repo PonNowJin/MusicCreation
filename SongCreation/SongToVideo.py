@@ -18,9 +18,9 @@ llm = LLM()
 model = LLM.getModel(generation_config)
 
 prompt = '''
-    你是一名專業的mv導演，請你根據歌詞分成6個mv場景，每個場景有兩段文字描述，分別是「初始畫面」和「運鏡過程」（不用文字標出），場景的frame index不增加，使用英文。範例：
+    你是一名專業的mv導演，請你根據歌詞分成15個mv場景，每個場景有兩段文字描述，分別是「初始畫面」和「運鏡過程」（不用文字標出），場景的frame index不增加，使用英文。範例：
 
-    使用json格式輸出，12個frame秒換一次場景與韻鏡形式，輸出形式兩兩一組，發揮想像力，場景可以有較大的變換，並具體的形容
+    使用json格式輸出，12個frame秒換一次場景與韻鏡形式，輸出形式兩兩一組，發揮想像力，場景可以有較大的變換，並具體的形容，描述簡單明瞭
     {
         "frame": 0,         # 場景
         "prompt": "a wide angle street level photo of a busy street in Versova, Mumbai, 4k, 8k, UHD",

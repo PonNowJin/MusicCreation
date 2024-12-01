@@ -1,50 +1,62 @@
 [
   {
     "frame": 0,
-    "prompt": "A sun-drenched bedroom in a modern apartment. Sunlight streams through a window, illuminating dust motes in the air. A framed photo of a smiling couple sits on a bedside table. Warm, nostalgic color palette."
+    "prompt": "A dimly lit, rain-soaked street at night.  Streetlights cast a hazy yellow glow on wet pavement.  Focus on a lone figure walking, head down."
   },
   {
     "frame": 12,
-    "prompt": "Close-up on the photograph, focusing on the woman's radiant smile.  The camera slowly zooms out, revealing more of the bedroom, emphasizing the feeling of loneliness and longing."
+    "prompt": "Close-up on the figure's face, reflecting the streetlights' glow in their eyes.  The camera slowly pulls back to reveal the surrounding rain-washed street."
   },
   {
     "frame": 12,
-    "prompt": "A vibrant, bustling marketplace in Accra, Ghana.  Bright colors, lively sounds, and the energy of daily life fill the scene.  Focus on the texture and details of the fabrics and the people."
+    "prompt": "A flashback sequence: A young couple laughing, sharing an umbrella, in a vibrant, bustling night market.  The atmosphere is warm and lively."
   },
   {
     "frame": 24,
-    "prompt": "A slow, dreamy pan across the marketplace, eventually settling on a distant figure resembling the man in the photograph. The focus is slightly soft, implying a sense of longing and uncertainty."
+    "prompt": "Quick cuts between the present-day rainy street and happy memories of the couple together – playful moments, intimate glances, shared smiles."
   },
   {
     "frame": 24,
-    "prompt": "A dark, intimate setting: the woman sits alone in her apartment at night, bathed in the soft glow of her phone screen.  She's listening to a voicemail message, eyes closed, a look of bittersweet remembrance on her face.  Muted lighting."
+    "prompt": "The female lead stands alone at a carousel, watching it spin.  The carousel is brightly lit, contrasting with the somber surrounding park at night."
   },
   {
     "frame": 36,
-    "prompt": "Close-up on the woman's face as she listens to the voicemail; tears welling up in her eyes.  The camera then pulls back to show her clutching the phone, a single tear tracing a path down her cheek.  Focus on the emotional depth."
+    "prompt": "Close-up on the woman's hands clutching a carousel horse, her face etched with sadness and longing.  The camera slowly pans to show the empty seats on the carousel."
   },
   {
     "frame": 36,
-    "prompt": "A breathtaking panoramic view of the Ghanaian coastline at sunset. The sky is ablaze with fiery oranges and deep purples. The ocean waves crash gently on the shore. A romantic, hopeful atmosphere."
+    "prompt": "A montage of scenes reflecting the couple's relationship:  happy moments intercut with moments of growing distance and tension."
   },
   {
     "frame": 48,
-    "prompt": "A slow zoom into the ocean, creating a sense of depth and vastness. The sound of the waves becomes more prominent, symbolizing the vast distance between the lovers.  The sunset colors gradually fade to night."
+    "prompt": "A rapid-fire sequence of images showing the passage of time, symbolizing the gradual disintegration of their relationship."
   },
   {
     "frame": 48,
-    "prompt": "A starry night sky over Ghana.  The stars twinkle brightly, creating a magical and serene atmosphere.  The camera uses time-lapse to show the movement of the stars."
+    "prompt": "The woman sits alone in a sparsely furnished apartment, surrounded by old photographs and mementos of the past. The room is dim and cold."
   },
   {
     "frame": 60,
-    "prompt": "A slow pan across the night sky, interspersed with quick cuts to close-ups of the woman's face, showing her looking wistfully at the stars, lost in her thoughts of her loved one.  Emphasize the contrast between vastness and intimacy."
+    "prompt": "Close-up on a single photograph, capturing a happy moment between the couple.  The camera slowly zooms out, revealing the woman’s tear-stained face."
   },
   {
     "frame": 60,
-    "prompt": "The woman wakes up from a dream, the image of the Ghanaian sunset lingers in her mind. Soft sunlight filters into her room, bringing a ray of hope. A hopeful, optimistic tone."
+    "prompt": "A long shot of the woman walking away from the camera, disappearing into the distance, surrounded by a blurry background suggesting a sense of loneliness."
   },
   {
     "frame": 72,
-    "prompt": "A montage of images flashing across the screen: the couple's happy moments together, interspersed with scenes of Ghana. The music swells as the scene builds toward a hopeful and optimistic climax. The final image is a shot of the couple holding hands on a Ghanaian beach."
+    "prompt": "A slow-motion shot of the woman walking in the rain, each footstep echoing the weight of her sorrow.  The rain intensifies as the scene progresses."
+  },
+  {
+    "frame": 72,
+    "prompt": "The woman is now standing on a hill overlooking the city, a solitary figure against the vast expanse of city lights at night. A melancholic and contemplative shot."
+  },
+  {
+    "frame": 84,
+    "prompt": "A dreamy, almost ethereal sequence showing a metaphorical representation of their love – a vibrant flower slowly wilting and dying."
+  },
+  {
+    "frame": 84,
+    "prompt": "The carousel is shown again, but now completely still and empty.  The camera focuses on a single, abandoned carousel horse, covered in dust and rain."
   }
 ]
